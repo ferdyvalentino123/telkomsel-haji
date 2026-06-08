@@ -111,53 +111,52 @@
         .footer-custom {
             background: linear-gradient(135deg, #bc0007 0%, #8a0005 100%);
             color: #fff;
-            padding: 60px 0 20px;
-            margin-top: 60px;
-            border-top: 8px solid rgba(0,0,0,0.1);
+            padding: 30px 0 15px;
+            margin-top: 40px;
+            border-top: 4px solid rgba(0,0,0,0.1);
         }
 
         .footer-custom h5 {
             font-weight: 700;
-            margin-bottom: 20px;
             letter-spacing: 0.5px;
         }
 
         .footer-custom p,
         .footer-custom a,
-        .footer-custom li {
+        .footer-custom span {
             color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .footer-custom a:hover {
             color: #fff;
-            text-decoration: underline;
         }
 
-        .social-icons a {
+        .social-icons .btn-social {
             display: inline-flex;
-            width: 45px;
-            height: 45px;
+            width: 36px;
+            height: 36px;
             background-color: rgba(255, 255, 255, 0.15);
             border-radius: 50%;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
-            font-size: 1.1rem;
+            margin: 0 4px;
+            font-size: 0.9rem;
+            color: #fff;
             transition: all 0.3s ease;
         }
 
-        .social-icons a:hover {
+        .social-icons .btn-social:hover {
             background-color: #fff;
             color: #bc0007;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
         .footer-bottom {
             border-top: 1px solid rgba(255, 255, 255, 0.15);
-            margin-top: 40px;
-            padding-top: 25px;
+            margin-top: 20px;
+            padding-top: 15px;
             text-align: center;
             font-size: 0.85rem;
             opacity: 0.8;
@@ -334,47 +333,38 @@
     <!-- Footer -->
     <footer class="footer-custom">
         <div class="container">
-            <div class="row align-items-start">
-                <div class="col-lg-4 col-md-6 mb-5 mb-lg-0 text-center text-md-start pe-lg-4">
-                    <h5 class="fw-bold mb-4">
-                        <img src="{{ asset('admin_asset/img/photos/logo_telkomsel.png') }}" onerror="this.style.display='none'" style="height:28px; filter:brightness(0) invert(1); margin-right:8px; vertical-align:middle;" alt="Logo"/> 
+            <div class="row align-items-center text-center text-md-start gap-3 gap-md-0">
+                <!-- Brand & Short Desc -->
+                <div class="col-lg-4 col-md-12 mb-3 mb-lg-0">
+                    <h5 class="fw-bold mb-2 d-flex align-items-center justify-content-center justify-content-md-start">
+                        <img src="{{ asset('admin_asset/img/photos/logo_telkomsel.png') }}" onerror="this.style.display='none'" style="height:24px; filter:brightness(0) invert(1); margin-right:8px;" alt="Logo"/> 
                         RoaMAX Haji
                     </h5>
-                    <p style="line-height:1.7; opacity:0.85;">Solusi roaming terbaik untuk konektivitas Anda di tanah suci. Paket kuota internet khusus ibadah haji yang andal, kuat, dan terpercaya tanpa perlu ganti kartu.</p>
+                    <p class="mb-0" style="line-height:1.5; opacity:0.85;">Solusi roaming terbaik, andal, & terpercaya di tanah suci.</p>
                 </div>
                 
-                <div class="col-lg-3 col-md-6 mb-5 mb-lg-0 text-center text-md-start">
-                    <h5 class="fw-bold mb-4">Pusat Bantuan</h5>
-                    <ul class="list-unstyled" style="line-height:2.4; opacity:0.85;">
-                        <li><i class="fas fa-phone-alt me-2" style="width: 20px;"></i> Call Center: <strong>188</strong></li>
-                        <li><i class="fas fa-envelope me-2" style="width: 20px;"></i> cs@telkomsel.co.id</li>
-                        <li><i class="fas fa-clock me-2" style="width: 20px;"></i> Beroperasi 24 Jam Penuh</li>
-                    </ul>
-                </div>
+                <!-- Quick Contacts -->
+                <!-- <div class="col-lg-5 col-md-6 mb-3 mb-md-0">
+                    <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-3 gap-lg-4" style="opacity:0.9;">
+                        <span class="d-flex align-items-center gap-2"><i class="fas fa-phone-alt"></i> 188</span>
+                        <span class="d-flex align-items-center gap-2"><i class="fas fa-envelope"></i> cs@telkomsel.co.id</span>
+                        <span class="d-flex align-items-center gap-2"><i class="fas fa-clock"></i> 24 Jam</span>
+                    </div>
+                </div> -->
 
-                <div class="col-lg-2 col-md-6 mb-5 mb-lg-0 text-center text-md-start">
-                    <h5 class="fw-bold mb-4">Navigasi</h5>
-                    <ul class="list-unstyled" style="line-height:2.4; opacity:0.85;">
-                        <li><a href="{{ route('pelanggan.home') }}" class="text-white text-decoration-none hover-underline"><i class="fas fa-angle-right me-1"></i> Beli Paket</a></li>
-                        <li><a href="{{ route('pelanggan.riwayat-transaksi') }}" class="text-white text-decoration-none hover-underline"><i class="fas fa-angle-right me-1"></i> Riwayat Anda</a></li>
-                        <li><a href="{{ route('pelanggan.profil') }}" class="text-white text-decoration-none hover-underline"><i class="fas fa-angle-right me-1"></i> Profil Akun</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0 text-center text-md-start">
-                    <h5 class="fw-bold mb-4">Hubungi Kami</h5>
+                <!-- Social Media -->
+                <div class="col-lg-3 col-md-6 text-center text-md-end">
                     <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="btn-social"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn-social"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="btn-social"><i class="fab fa-instagram"></i></a>
+                        <!-- <a href="#" class="btn-social"><i class="fab fa-youtube"></i></a> -->
                     </div>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p class="m-0">&copy; 2026 Telkomsel RoaMAX Haji. 
-                    <br>Hak Cipta Dilindungi Undang-Undang.</p>
+                <p class="m-0">&copy;2026 Telkomsel RoaMAX Haji</p>
             </div>
         </div>
     </footer>
@@ -384,6 +374,7 @@
 </body>
 
 </html>
+
 
 
 

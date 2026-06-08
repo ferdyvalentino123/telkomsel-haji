@@ -35,6 +35,7 @@
             <tr>
               <th>No</th>
               <th>Nama Produk</th>
+              <th>Kategori</th>
               <th>Harga</th>
               <th>Stok</th>
               <th>Insentif</th>
@@ -49,7 +50,17 @@
                 <td>
                   <strong>{{ $item->produk_nama }}</strong>
                   <br>
-                  <small class="text-muted">{{ Str::limit($item->produk_deskripsi ?? "-", 40) }}</small>
+                  <small class="text-muted">{{ Str::limit($item->produk_detail ?? "-", 40) }}</small>
+                </td>
+                <td>
+                  @if($item->travel_id)
+                    <span class="badge" style="background-color:#6c63ff; font-size:0.8rem;">
+                      <i class="fas fa-plane me-1"></i>
+                      {{ $item->travel->name ?? 'Travel #'.$item->travel_id }}
+                    </span>
+                  @else
+                    <span class="badge bg-secondary" style="font-size:0.8rem;">Semua</span>
+                  @endif
                 </td>
                 <td>
                   <span class="badge bg-info">Rp {{ number_format($item->produk_harga, 0, ",", ".") }}</span>
@@ -112,3 +123,4 @@ function deleteProduk(id) {
 </script>
 
 @endsection
+

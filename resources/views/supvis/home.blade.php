@@ -19,7 +19,7 @@
 
             <div class="dashboard-container">
 
-            <a href="{{ route('supvis.budget_insentif.index') }}" style="text-decoration: none;">
+            <a href="{{ route('kasir.budget_insentif.index') }}" style="text-decoration: none;">
                 <div class="info-box budget-box">
                     <h3>Sisa Budget:</h3>
                     <p class="amount">IDR {{ number_format($sisaBudget) }}</p>
@@ -179,3 +179,4 @@
 
     </style>
 </x-Supvis.SupvisLayouts>
+

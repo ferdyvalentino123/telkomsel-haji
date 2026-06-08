@@ -123,15 +123,15 @@
         <h5>Detail Insentif Per Sales</h5>
     </div>
     <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
-    <table class="table-custom">
+    <table class="table table-custom">
         <thead>
             <tr>
-                <th>No</th>
-                <th>Nama Sales</th>
-                <th>Total Transaksi</th>
-                <th>Total Penjualan</th>
-                <th>Total Insentif</th>
-                <th>Rata-rata Per Transaksi</th>
+                <th class="text-center" width="5%">No</th>
+                <th class="text-start">Nama Sales</th>
+                <th class="text-center">Total Transaksi</th>
+                <th class="text-end">Total Penjualan</th>
+                <th class="text-end">Total Insentif</th>
+                <th class="text-end">Rata-rata Per Transaksi</th>
             </tr>
         </thead>
         <tbody>
@@ -142,20 +142,20 @@
             @else
                 @foreach ($insentifData as $index => $item)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-start">
                         <strong>{{ $item['nama_sales'] ?? 'N/A' }}</strong>
                     </td>
                     <td class="text-center">
-                        <span class="badge bg-info">{{ $item['total_transaksi'] }}</span>
+                        <span class="text-dark">{{ $item['total_transaksi'] }}</span>
                     </td>
-                    <td>
+                    <td class="text-end">
                         Rp {{ number_format($item['total_penjualan'], 0, ',', '.') }}
                     </td>
-                    <td>
+                    <td class="text-end">
                         <strong class="text-success">Rp {{ number_format($item['total_insentif'], 0, ',', '.') }}</strong>
                     </td>
-                    <td>
+                    <td class="text-end">
                         Rp {{ number_format($item['total_transaksi'] > 0 ? $item['total_insentif'] / $item['total_transaksi'] : 0, 0, ',', '.') }}
                     </td>
                 </tr>
@@ -180,3 +180,4 @@
 @endif
 
 @endsection
+

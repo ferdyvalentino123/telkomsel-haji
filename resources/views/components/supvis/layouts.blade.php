@@ -9,7 +9,7 @@
 <body>
 	<div class="wrapper">
 
-		<x-Supvis.SupvisLeftDrawer></x-Supvis.SupvisLeftDrawer>
+		<x-supvis.left-drawer></x-supvis.left-drawer>
 
 		<div class="main">
             <x-top-drawer></x-top-drawer>
@@ -27,3 +27,4 @@
 </body>
 
 </html>
+

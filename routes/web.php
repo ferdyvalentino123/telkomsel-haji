@@ -28,8 +28,6 @@ Route::middleware(['auth'])->group(function () {
 // Admin Routes (auth + role:admin)
 require __DIR__ . '/admin.php';
 
-// Supervisor Routes (auth + role:supervisor)
-require __DIR__ . '/supervisor.php';
 
 // Kasir Routes (auth + role:kasir)
 require __DIR__ . '/kasir.php';

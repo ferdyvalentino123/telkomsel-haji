@@ -261,9 +261,10 @@
                                         <div class="d-flex flex-column align-items-center">
                                             <div class="form-check p-0 m-0">
                                                 <input type="checkbox" class="activate-checkbox" 
-                                                       style="width: 22px; height: 22px; cursor: pointer;"
+                                                       style="width: 22px; height: 22px; cursor: {{ $item->trashed() ? 'not-allowed' : 'pointer' }};"
                                                        data-id="{{ $item->id }}" 
-                                                       {{ $item->is_activated ? 'checked' : '' }}>
+                                                       {{ $item->is_activated ? 'checked' : '' }}
+                                                       {{ $item->trashed() ? 'disabled' : '' }}>
                                             </div>
                                             <span class="badge {{ $item->is_activated ? 'bg-success' : 'bg-secondary' }} mt-1" 
                                                   id="status-badge-{{ $item->id }}"
@@ -293,7 +294,7 @@
                                     <td class="insentif">{{ $item->produk ? $item->produk->produk_insentif : 0 }}</td>
                                     <td class="text-nowrap" style="width: 100px;">
                                         <div class="d-flex gap-2 justify-content-center align-items-center">
-                                            <button type="button" class="btn-download-nota btn-lihat-modal" data-transaksi-id="{{ $item->id }}" title="Lihat Nota" style="width: 35px; height: 35px; padding: 0;">
+                                            <button type="button" class="btn-download-nota btn-lihat-modal" data-transaksi-id="{{ $item->id }}" title="Cetak Nota" style="width: 35px; height: 35px; padding: 0;">
                                                 <i class="fas fa-receipt"></i>
                                             </button>
                                             @if(!$item->trashed())
@@ -343,7 +344,7 @@
                 <tbody>
                     @if($groupedSetoran->isEmpty())
                         <tr>
-                            <td colspan="9" class="py-4 text-muted">Belum ada riwayat setoran.</td>
+                            <td colspan="10" class="py-4 text-muted">Belum ada riwayat setoran.</td>
                         </tr>
                     @else
                         @foreach ($groupedSetoran as $tanggal => $items)
@@ -385,7 +386,7 @@
                                     <td class="text-success small">Rp {{ number_format($item->produk ? $item->produk->produk_insentif : 0, 0, ',', '.') }}</td>
                                     <td class="text-nowrap" style="width: 50px;">
                                         <div class="d-flex justify-content-center">
-                                            <button type="button" class="btn-download-nota btn-lihat-modal" data-transaksi-id="{{ $item->id }}" title="Lihat Nota" style="width: 35px; height: 35px; padding: 0;">
+                                            <button type="button" class="btn-download-nota btn-lihat-modal" data-transaksi-id="{{ $item->id }}" title="Cetak Nota" style="width: 35px; height: 35px; padding: 0;">
                                                 <i class="fas fa-receipt"></i>
                                             </button>
                                         </div>

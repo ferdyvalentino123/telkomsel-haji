@@ -311,9 +311,29 @@
                         <label class="custom-form-label">
                             <i class="fas fa-align-left"></i> Deskripsi Produk
                         </label>
-                        <textarea name="produk_deskripsi" class="form-control custom-form-control @error('produk_deskripsi') is-invalid @enderror" 
-                                  rows="4" placeholder="Tuliskan spesifikasi, keunggulan, atau kuota dari paket...">{{ old('produk_deskripsi', $produk->produk_deskripsi ?? '') }}</textarea>
-                        @error("produk_deskripsi") <small class="text-danger mt-2 d-block fw-bold">{{ $message }}</small> @enderror
+                        <textarea name="produk_detail" class="form-control custom-form-control @error('produk_detail') is-invalid @enderror" 
+                                  rows="4" placeholder="Tuliskan spesifikasi, keunggulan, atau kuota dari paket...">{{ old('produk_detail', $produk->produk_detail ?? '') }}</textarea>
+                        @error("produk_detail") <small class="text-danger mt-2 d-block fw-bold">{{ $message }}</small> @enderror
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="custom-form-label">
+                                <i class="fas fa-wifi"></i> Jumlah Kuota
+                            </label>
+                            <input type="text" name="kuota" class="form-control custom-form-control @error('kuota') is-invalid @enderror" 
+                                   value="{{ old('kuota', $produk->kuota ?? '') }}" placeholder="Contoh: 15GB Combo">
+                            @error("kuota") <small class="text-danger mt-2 d-block fw-bold">{{ $message }}</small> @enderror
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label class="custom-form-label">
+                                <i class="fas fa-clock"></i> Masa Aktif
+                            </label>
+                            <input type="text" name="masa_aktif" class="form-control custom-form-control @error('masa_aktif') is-invalid @enderror" 
+                                   value="{{ old('masa_aktif', $produk->masa_aktif ?? '') }}" placeholder="Contoh: 30 Hari">
+                            @error("masa_aktif") <small class="text-danger mt-2 d-block fw-bold">{{ $message }}</small> @enderror
+                        </div>
                     </div>
 
                     <div class="row">
@@ -352,7 +372,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-5">
+                    <div class="mb-4">
                         <label class="custom-form-label">
                             <i class="fas fa-hand-holding-usd"></i> Insentif per Produk
                         </label>
@@ -362,6 +382,32 @@
                                    value="{{ old('produk_insentif', $produk->produk_insentif ?? '') }}" placeholder="Contoh: 5000">
                         </div>
                         @error("produk_insentif") <small class="text-danger mt-2 d-block fw-bold">{{ $message }}</small> @enderror
+                    </div>
+
+                    {{-- =============================================
+                         FIELD: Kepemilikan Travel Agent
+                         NULL  = produk tampil ke semua travel
+                         ID    = produk hanya tampil ke travel tertentu
+                    ============================================== --}}
+                    <div class="mb-5">
+                        <label class="custom-form-label">
+                            <i class="fas fa-plane"></i> Kepemilikan Travel
+                        </label>
+                        <select name="travel_id" class="form-control custom-form-control @error('travel_id') is-invalid @enderror">
+                            <option value="">-- Semua --</option>
+                            @foreach($travels ?? [] as $travelOption)
+                                <option value="{{ $travelOption->id }}"
+                                    {{ old('travel_id', $produk->travel_id ?? '') == $travelOption->id ? 'selected' : '' }}>
+                                    {{ $travelOption->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error("travel_id") <small class="text-danger mt-2 d-block fw-bold">{{ $message }}</small> @enderror
+                        <small class="text-muted mt-2 d-block">
+                            <i class="fas fa-info-circle text-danger me-1"></i>
+                            Jika dipilih, produk ini <strong>hanya akan muncul</strong> di halaman travel yang bersangkutan.
+                            Biarkan kosong agar produk terlihat oleh semua travel.
+                        </small>
                     </div>
 
                     <div class="d-flex gap-3 flex-wrap">
@@ -396,3 +442,4 @@
 </div>
 
 @endsection
+

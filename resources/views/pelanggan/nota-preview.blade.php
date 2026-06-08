@@ -46,6 +46,14 @@
                 <span>Nomor Telepon</span>
                 <strong>{{ $formData['telepon_pelanggan'] }}</strong>
             </div>
+            <div class="info-row">
+                <span>Total Kuota</span>
+                <strong>{{ $formData['kuota'] ?? 'Utama' }}</strong>
+            </div>
+            <div class="info-row">
+                <span>Masa Aktif</span>
+                <strong>{{ $formData['masa_aktif'] ?? '30 Hari' }}</strong>
+            </div>
             @if(isset($formData['nomor_injeksi']) && $formData['nomor_injeksi'])
             {{-- <div class="info-row">
                 <span>Nomor Injeksi</span>

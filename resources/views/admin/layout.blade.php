@@ -391,14 +391,20 @@
                             <i class="fas fa-gift"></i> Merchandise
                         </a>
                     </li>
-                    <li class="sidebar-item {{ request()->routeIs('admin.stock-history.*') ? 'active' : '' }}">
-                        <a class="sidebar-link" href="{{ route('admin.stock-history.index') }}">
-                            <i class="fas fa-history"></i> Pantau Stok
-                        </a>
-                    </li>
                     <li class="sidebar-item {{ request()->routeIs('admin.transaksi.*') ? 'active' : '' }}">
                         <a class="sidebar-link" href="{{ route('admin.transaksi.index') }}">
                             <i class="fas fa-credit-card"></i> Transaksi
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('admin.travel-aktivasi.*') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('admin.travel-aktivasi.index') }}">
+                            <i class="fas fa-plane-arrival"></i> Aktivasi Travel
+                            @php
+                                $pendingTravelCount = \App\Models\Transaksi::whereHas('supervisor', function($q){ $q->where('role','travel'); })->where(function($q){ $q->where('is_paid',true)->orWhereIn('status',['completed','lunas','success']); })->where('is_activated', false)->count(\Illuminate\Support\Facades\DB::raw('DISTINCT COALESCE(snap_token, id_transaksi)'));
+                            @endphp
+                            @if($pendingTravelCount > 0)
+                                <span class="badge bg-warning text-dark ms-auto" style="font-size:0.65rem;">{{ $pendingTravelCount }}</span>
+                            @endif
                         </a>
                     </li>
                     <li class="sidebar-item {{ request()->routeIs('admin.monitor.setoran') ? 'active' : '' }}">
@@ -504,6 +510,7 @@
 </body>
 
 </html>
+
 
 
 

@@ -11,7 +11,17 @@ class RoleUsersController extends Controller
 {
     public function index()
     {
-        $users = RoleUsers::paginate(15);
+        $users = RoleUsers::orderByRaw("
+            CASE role 
+                WHEN 'admin' THEN 1 
+                WHEN 'supervisor' THEN 2 
+                WHEN 'kasir' THEN 2 
+                WHEN 'sales' THEN 3 
+                WHEN 'travel' THEN 4 
+                WHEN 'pelanggan' THEN 5 
+                ELSE 6 
+            END ASC
+        ")->latest('id')->paginate(15);
         return view("admin.users.index", compact("users"));
     }
 

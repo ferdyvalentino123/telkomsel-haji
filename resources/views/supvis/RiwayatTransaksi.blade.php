@@ -371,7 +371,10 @@
         @endphp
 
         <div class="container text-center mt-3">
-            <a href="{{ route('export.excel',  $queryParams) }}" class="btn btn-success">Export ke Excel</a>
+            @php
+                $routeName = Auth::user()->hasRole('kasir') ? 'kasir.export.excel' : 'admin.transaksi.export';
+            @endphp
+            <a href="{{ route($routeName, $queryParams) }}" class="btn btn-success">Export ke Excel</a>
         </div>
 
         <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
@@ -416,3 +419,4 @@
         </script>
     </body>
 </x-dynamic-component>
+

@@ -41,7 +41,7 @@ class DashboardController extends Controller
             'role' => $request->role,
             'phone' => $request->phone,
         ]);
-        return redirect()->route('add_sales')->with('success', 'Sales berhasil ditambahkan!');
+        return redirect()->route('kasir.add_sales')->with('success', 'Sales berhasil ditambahkan!');
 
     }
 
@@ -69,6 +69,7 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         $hasUnsetorPastDays = Transaksi::where('nama_sales', $user->name)
+            ->where('status', 'lunas')
             ->where('is_setor', false)
             ->whereDate('tanggal_transaksi', '<', now()->format('Y-m-d'))
             ->exists();
@@ -92,6 +93,7 @@ class DashboardController extends Controller
         $transaksi = Transaksi::withTrashed()
             ->with('produk')
             ->where('nama_sales', $user->name)
+            ->where('status', 'lunas')
             ->orderBy('tanggal_transaksi', 'desc')
             ->get();
 
@@ -143,7 +145,7 @@ class DashboardController extends Controller
             'tempat_tugas' => $request->tempat_tugas,
         ]);
 
-        return redirect()->route('role-users.sales')->with('success', 'Data bertugas berhasil diperbarui!');
+        return redirect()->route('kasir.role-users.sales')->with('success', 'Data bertugas berhasil diperbarui!');
     }
 
     public function massUpdate(Request $request)

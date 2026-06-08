@@ -218,13 +218,7 @@
                 <td class="colon">:</td>
                 <td class="value">{{ $formData['telepon_pelanggan'] }}</td>
             </tr>
-            @if(isset($formData['nomor_injeksi']) && $formData['nomor_injeksi'])
-            <tr>
-                <td class="label">Nomor Injeksi</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $formData['nomor_injeksi'] }}</td>
-            </tr>
-            @endif
+
             @if(isset($formData['addon_perdana']) && $formData['addon_perdana'])
             <tr>
                 <td class="label">Add-On</td>
@@ -252,9 +246,14 @@
         <!-- Extra Info -->
         <table class="info-table">
             <tr>
-                <td class="label">Merchandise</td>
+                <td class="label">Total Kuota</td>
                 <td class="colon">:</td>
-                <td class="value">{{ $formData['merch_nama'] ?? '-' }}</td>
+                <td class="value">{{ $formData['kuota'] ?? 'Utama' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Masa Aktif</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $formData['masa_aktif'] ?? '30 Hari' }}</td>
             </tr>
             <tr>
                 <td class="label">Tanggal Aktivasi</td>
@@ -279,3 +278,4 @@
     </div>
 </body>
 </html>
+

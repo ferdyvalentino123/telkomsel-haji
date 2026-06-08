@@ -28,6 +28,13 @@
                     <i class="align-middle fas fa-file-invoice-dollar"></i> <span class="align-middle">Rekap Pendapatan</span>
                 </a>
             </li>
+
+            <li class="sidebar-item {{ request()->routeIs('sales.aktivasi.index') ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ route('sales.aktivasi.index') }}">
+                    <i class="align-middle fas fa-sim-card"></i> <span class="align-middle">Aktivasi Online</span>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
+

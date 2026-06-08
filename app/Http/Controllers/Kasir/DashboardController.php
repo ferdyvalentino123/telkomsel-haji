@@ -17,11 +17,37 @@ class DashboardController extends Controller
         // Get dashboard data for kasir
         $totalTransaksi = Transaksi::count();
         $totalSales = RoleUsers::where('role', 'sales')->count();
+        $transaksiLunas = Transaksi::where('is_paid', true)->count();
+        $transaksiPending = Transaksi::where('is_paid', false)->count();
+
+        // Get budget statistics
+        $budget = \App\Models\BudgetInsentif::first() ?? new \App\Models\BudgetInsentif(['total_insentif' => 0]);
+        $totalBudget = $budget->total_insentif;
+        
+        $usedInsentif = Transaksi::with('produk')->get()->sum(function($t) {
+            return $t->produk->produk_insentif ?? 0;
+        });
+
+        $sisaBudget = $totalBudget - $usedInsentif;
+
+        // Get recent transactions
+        $recentTransactions = Transaksi::with(['produk', 'sales', 'kasir'])->latest()->take(5)->get();
         
         return view('kasir.dashboard', [
             'totalTransaksi' => $totalTransaksi,
             'totalSales' => $totalSales,
+            'transaksiLunas' => $transaksiLunas,
+            'transaksiPending' => $transaksiPending,
+            'totalBudget' => $totalBudget,
+            'totalInsentif' => $usedInsentif,
+            'sisaBudget' => $sisaBudget,
+            'recentTransactions' => $recentTransactions,
         ]);
+    }
+
+    public function create()
+    {
+        return view('kasir.add_sales');
     }
 
     public function store(Request $request)
@@ -52,7 +78,7 @@ class DashboardController extends Controller
             'pin' => $request->pin,
             'role' => $request->role,
         ]);
-        return redirect()->route('add_supvis')->with('success', 'Sales berhasil ditambahkan!');
+        return redirect()->route('kasir.add_sales')->with('success', 'Sales berhasil ditambahkan!');
 
     }
 

@@ -8,7 +8,7 @@
 <body>
 	<div class="wrapper">
         
-		<x-Kasir.KasirLeftDrawer></x-Kasir.KasirLeftDrawer>
+		@include('components.kasir.left-drawer')
 
 		<div class="main">
             <x-top-drawer></x-top-drawer>

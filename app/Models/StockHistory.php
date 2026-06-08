@@ -23,6 +23,11 @@ class StockHistory extends Model
         return $this->belongsTo(Produk::class, 'product_id');
     }
 
+    public function produk()
+    {
+        return $this->product();
+    }
+
     public function merchandise()
     {
         return $this->belongsTo(Merchandise::class, 'merchandise_id');

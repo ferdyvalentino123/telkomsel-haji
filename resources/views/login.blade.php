@@ -108,7 +108,7 @@
                 <!-- Branding Overlap -->
                 <div class="z-10">
                     <h1 class="font-headline text-2xl font-extrabold tracking-tight">S I S T E R</h1>
-                    <p class="mt-2 text-on-primary/80 font-medium text-xs md:text-sm max-w-xs">Menghubungkan perjalanan spiritual Anda dengan kemudahan layanan digital yang terpercaya.</p>
+                    <p class="mt-2 text-on-primary/80 font-medium text-xs md:text-sm max-w-xs">Teman setia yang siap mempermudah setiap langkah perjalanan suci Anda menuju Baitullah.</p>
                 </div>
                 <!-- Decorative Islamic Elements -->
                 <div class="absolute inset-0 opacity-10 pointer-events-none">
@@ -132,7 +132,7 @@
                 <div class="max-w-md mx-auto w-full">
                     <div class="mb-5 md:mb-6">
                         <h2 class="font-headline text-2xl font-bold text-on-surface mb-1">Masuk</h2>
-                        <p class="text-secondary font-medium text-xs md:text-sm">Masuk untuk memulai perjalanan ibadah Anda</p>
+                        <p class="text-secondary font-medium text-xs md:text-sm">Yuk, masuk untuk melanjutkan persiapan ibadah Anda</p>
                     </div>
 
                     @if ($errors->any())
@@ -155,7 +155,12 @@
                         </div>
                         <!-- PIN Field -->
                         <div class="space-y-2">
-                            <label class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider" for="pin">Kata Sandi (PIN)</label>
+                            <div class="flex items-center justify-between">
+                                <label class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider" for="pin">Kata Sandi (PIN)</label>
+                                <button type="button" onclick="openForgotPasswordModal()" class="font-label text-xs font-semibold text-primary hover:underline transition-colors" id="btn-lupa-password">
+                                    Lupa Password?
+                                </button>
+                            </div>
                             <div class="relative group">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">lock</span>
                                 <input class="w-full pl-12 pr-12 py-3 bg-surface-container-low border border-outline-variant/20 rounded-xl focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none text-on-surface placeholder:text-secondary/50 text-sm" id="pin" name="pin" placeholder="Masukkan PIN Anda" type="password" required />
@@ -204,7 +209,7 @@
             </div>
             <p class="text-[10px] font-label text-secondary/60 uppercase tracking-widest">
                 &copy;2026 Telkomsel RoaMAX Haji. 
-                <br>Seluruh hak cipta dilindungi.
+                <!-- <br>Seluruh hak cipta dilindungi. -->
             </p>
         </footer>
     </main>
@@ -291,6 +296,118 @@
             </form>
         </div>
     </div>
+
+    <!-- ===================== FORGOT PASSWORD MODAL ===================== -->
+    <div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-surface-container-lowest rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-primary to-primary-container p-6 flex justify-between items-center">
+                <div>
+                    <h2 class="font-headline text-xl font-bold text-on-primary">Reset Password</h2>
+                    <p id="fp-modal-subtitle" class="text-on-primary/75 text-xs mt-1">Masukkan email Anda untuk mendapatkan kode verifikasi</p>
+                </div>
+                <button onclick="closeForgotPasswordModal()" class="text-on-primary hover:opacity-80 transition-opacity" id="btn-close-fp">
+                    <span class="material-symbols-outlined text-[28px]">close</span>
+                </button>
+            </div>
+
+            <!-- Step Indicator -->
+            <div class="flex items-center px-6 py-4 gap-0 bg-surface-container-low border-b border-surface-container-high">
+                <div class="flex items-center">
+                    <div id="step-dot-1" class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-xs transition-all">1</div>
+                    <span id="step-label-1" class="ml-2 text-xs font-semibold text-primary">Email</span>
+                </div>
+                <div class="flex-1 h-0.5 mx-3 bg-surface-container-high" id="step-line-1"></div>
+                <div class="flex items-center">
+                    <div id="step-dot-2" class="w-8 h-8 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-bold text-xs transition-all">2</div>
+                    <span id="step-label-2" class="ml-2 text-xs font-semibold text-secondary">Verifikasi</span>
+                </div>
+                <div class="flex-1 h-0.5 mx-3 bg-surface-container-high" id="step-line-2"></div>
+                <div class="flex items-center">
+                    <div id="step-dot-3" class="w-8 h-8 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-bold text-xs transition-all">3</div>
+                    <span id="step-label-3" class="ml-2 text-xs font-semibold text-secondary">Password Baru</span>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!-- Alert Box -->
+                <div id="fp-alert" class="hidden mb-4 p-3 rounded-xl text-sm font-label"></div>
+
+                <!-- STEP 1: Enter Email -->
+                <div id="fp-step-1">
+                    <p class="text-secondary text-sm mb-5">Masukkan alamat email yang terdaftar. Kami akan mengirimkan kode OTP 6 digit ke email Anda.</p>
+                    <div class="space-y-2 mb-5">
+                        <label class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" for="fp-email">Alamat Email</label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">mail</span>
+                            <input class="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-outline-variant/20 rounded-xl focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none text-on-surface placeholder:text-secondary/50 text-sm" id="fp-email" placeholder="Masukkan email Anda" type="email" />
+                        </div>
+                    </div>
+                    <button id="btn-send-otp" onclick="fpSendOtp()" class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold text-sm rounded-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">send</span>
+                        Kirim Kode Verifikasi
+                    </button>
+                </div>
+
+                <!-- STEP 2: Enter OTP -->
+                <div id="fp-step-2" class="hidden">
+                    <p class="text-secondary text-sm mb-1">Kode OTP 6 digit telah dikirim ke:</p>
+                    <p id="fp-email-display" class="font-bold text-primary text-sm mb-5"></p>
+                    <div class="space-y-2 mb-3">
+                        <label class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" for="fp-otp">Kode Verifikasi (6 Digit)</label>
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">pin</span>
+                            <input class="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-outline-variant/20 rounded-xl focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none text-on-surface placeholder:text-secondary/50 text-sm tracking-[0.5em] font-bold text-center text-lg" id="fp-otp" placeholder="000000" maxlength="6" type="text" inputmode="numeric" pattern="[0-9]{6}" />
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mb-5">
+                        <p class="text-xs text-secondary">Tidak menerima kode?</p>
+                        <button type="button" onclick="fpResendOtp()" id="btn-resend" class="text-xs font-bold text-primary hover:underline transition-colors">Kirim Ulang</button>
+                    </div>
+                    <button id="btn-verify-otp" onclick="fpVerifyOtp()" class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold text-sm rounded-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">verified</span>
+                        Verifikasi Kode
+                    </button>
+                </div>
+
+                <!-- STEP 3: Set New Password -->
+                <div id="fp-step-3" class="hidden">
+                    <div class="flex items-center gap-2 mb-4 p-3 bg-green-50 rounded-xl border border-green-200">
+                        <span class="material-symbols-outlined text-green-600">check_circle</span>
+                        <p class="text-green-700 text-sm font-semibold">Verifikasi berhasil! Buat password baru.</p>
+                    </div>
+                    <div class="space-y-4 mb-5">
+                        <div class="space-y-2">
+                            <label class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" for="fp-new-pin">Password Baru (min. 6 karakter)</label>
+                            <div class="relative group">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">lock</span>
+                                <input class="w-full pl-12 pr-12 py-3 bg-surface-container-low border border-outline-variant/20 rounded-xl focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none text-on-surface placeholder:text-secondary/50 text-sm" id="fp-new-pin" placeholder="Masukkan password baru" type="password" />
+                                <button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-secondary" type="button" onclick="fpTogglePin('fp-new-pin', this)">
+                                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider ml-1" for="fp-confirm-pin">Konfirmasi Password Baru</label>
+                            <div class="relative group">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">lock_check</span>
+                                <input class="w-full pl-12 pr-12 py-3 bg-surface-container-low border border-outline-variant/20 rounded-xl focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all outline-none text-on-surface placeholder:text-secondary/50 text-sm" id="fp-confirm-pin" placeholder="Ulangi password baru" type="password" />
+                                <button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant hover:text-secondary" type="button" onclick="fpTogglePin('fp-confirm-pin', this)">
+                                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="btn-reset-password" onclick="fpResetPassword()" class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold text-sm rounded-xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">lock_reset</span>
+                        Reset Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ===================== END FORGOT PASSWORD MODAL ===================== -->
 
     <script>
         // PIN Visibility Toggle - Login
@@ -380,6 +497,194 @@
             });
         });
         
+        // ========================= FORGOT PASSWORD LOGIC =========================
+        let fpCurrentEmail = '';
+        let fpVerifiedOtp  = '';
+
+        function openForgotPasswordModal() {
+            fpCurrentEmail = '';
+            fpVerifiedOtp  = '';
+            fpResetToStep(1);
+            fpHideAlert();
+            document.getElementById('fp-email').value = '';
+            document.getElementById('fp-otp').value   = '';
+            document.getElementById('fp-new-pin').value     = '';
+            document.getElementById('fp-confirm-pin').value = '';
+            document.getElementById('forgotPasswordModal').classList.remove('hidden');
+        }
+
+        function closeForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').classList.add('hidden');
+        }
+
+        document.getElementById('forgotPasswordModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeForgotPasswordModal();
+        });
+
+        function fpResetToStep(step) {
+            ['fp-step-1','fp-step-2','fp-step-3'].forEach((id, i) => {
+                document.getElementById(id).classList.toggle('hidden', i + 1 !== step);
+            });
+            // Update step dots
+            for (let i = 1; i <= 3; i++) {
+                const dot   = document.getElementById('step-dot-' + i);
+                const label = document.getElementById('step-label-' + i);
+                if (i < step) {
+                    dot.className   = 'w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-xs transition-all';
+                    dot.innerHTML   = '<span class="material-symbols-outlined text-[16px]">check</span>';
+                    label.className = 'ml-2 text-xs font-semibold text-green-600';
+                } else if (i === step) {
+                    dot.className   = 'w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-xs transition-all';
+                    dot.textContent = i;
+                    label.className = 'ml-2 text-xs font-semibold text-primary';
+                } else {
+                    dot.className   = 'w-8 h-8 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-bold text-xs transition-all';
+                    dot.textContent = i;
+                    label.className = 'ml-2 text-xs font-semibold text-secondary';
+                }
+            }
+            const subtitles = [
+                'Masukkan email Anda untuk mendapatkan kode verifikasi',
+                'Masukkan kode OTP yang dikirim ke email Anda',
+                'Buat password baru untuk akun Anda'
+            ];
+            document.getElementById('fp-modal-subtitle').textContent = subtitles[step - 1];
+        }
+
+        function fpShowAlert(msg, type = 'error') {
+            const el = document.getElementById('fp-alert');
+            el.classList.remove('hidden', 'bg-error-container', 'text-error', 'bg-green-50', 'text-green-700', 'border', 'border-green-200');
+            if (type === 'error') {
+                el.className = 'mb-4 p-3 rounded-xl text-sm font-label bg-error-container text-error';
+            } else {
+                el.className = 'mb-4 p-3 rounded-xl text-sm font-label bg-green-50 text-green-700 border border-green-200';
+            }
+            el.textContent = msg;
+        }
+
+        function fpHideAlert() {
+            document.getElementById('fp-alert').classList.add('hidden');
+        }
+
+        function fpSetLoading(btnId, loading, text = '') {
+            const btn = document.getElementById(btnId);
+            btn.disabled = loading;
+            btn.style.opacity = loading ? '0.7' : '1';
+            if (text) btn.innerHTML = loading
+                ? '<span class="material-symbols-outlined text-[18px] align-middle mr-1 animate-spin">progress_activity</span>' + text
+                : text;
+        }
+
+        function fpTogglePin(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon  = btn.querySelector('.material-symbols-outlined');
+            if (input.type === 'password') {
+                input.type   = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type   = 'password';
+                icon.textContent = 'visibility';
+            }
+        }
+
+        async function fpSendOtp() {
+            fpHideAlert();
+            const email = document.getElementById('fp-email').value.trim();
+            if (!email) { fpShowAlert('Masukkan alamat email Anda.'); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { fpShowAlert('Format email tidak valid.'); return; }
+
+            fpSetLoading('btn-send-otp', true, 'Mengirim...');
+            try {
+                const res  = await fetch('{{ route("forgot-password.send-otp") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    fpCurrentEmail = email;
+                    document.getElementById('fp-email-display').textContent = email;
+                    fpResetToStep(2);
+                    fpShowAlert('Kode OTP berhasil dikirim ke ' + email, 'success');
+                } else {
+                    fpShowAlert(data.message || 'Gagal mengirim kode. Coba lagi.');
+                }
+            } catch (e) {
+                fpShowAlert('Koneksi gagal. Periksa internet Anda.');
+            } finally {
+                fpSetLoading('btn-send-otp', false, '<span class="material-symbols-outlined text-[18px] align-middle mr-1">send</span> Kirim Kode Verifikasi');
+            }
+        }
+
+        async function fpResendOtp() {
+            document.getElementById('fp-email').value = fpCurrentEmail;
+            await fpSendOtp();
+        }
+
+        async function fpVerifyOtp() {
+            fpHideAlert();
+            const otp = document.getElementById('fp-otp').value.trim();
+            if (otp.length !== 6 || !/^\d{6}$/.test(otp)) { fpShowAlert('Masukkan kode OTP 6 digit yang valid.'); return; }
+
+            fpSetLoading('btn-verify-otp', true, 'Memverifikasi...');
+            try {
+                const res  = await fetch('{{ route("forgot-password.verify-otp") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({ email: fpCurrentEmail, otp })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    fpVerifiedOtp = otp;
+                    fpResetToStep(3);
+                    fpHideAlert();
+                } else {
+                    fpShowAlert(data.message || 'Kode verifikasi tidak valid.');
+                }
+            } catch (e) {
+                fpShowAlert('Koneksi gagal. Periksa internet Anda.');
+            } finally {
+                fpSetLoading('btn-verify-otp', false, '<span class="material-symbols-outlined text-[18px] align-middle mr-1">verified</span> Verifikasi Kode');
+            }
+        }
+
+        async function fpResetPassword() {
+            fpHideAlert();
+            const newPin     = document.getElementById('fp-new-pin').value;
+            const confirmPin = document.getElementById('fp-confirm-pin').value;
+            if (!newPin || newPin.length < 6) { fpShowAlert('Password baru minimal 6 karakter.'); return; }
+            if (newPin !== confirmPin) { fpShowAlert('Konfirmasi password tidak cocok.'); return; }
+
+            fpSetLoading('btn-reset-password', true, 'Menyimpan...');
+            try {
+                const res  = await fetch('{{ route("forgot-password.reset") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({ email: fpCurrentEmail, otp: fpVerifiedOtp, new_pin: newPin, new_pin_confirm: confirmPin })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeForgotPasswordModal();
+                    // Tampilkan pesan sukses di halaman login
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'mb-6 p-4 bg-green-50 border border-green-200 rounded-xl';
+                    successDiv.innerHTML = '<p class="text-green-700 font-label text-sm font-semibold">&#10003; ' + data.message + '</p>';
+                    const loginUrl = '{{ route("login") }}';
+                    const form = document.querySelector('form[action="' + loginUrl + '"]');
+                    if (form) form.insertAdjacentElement('beforebegin', successDiv);
+                    else document.querySelector('main').prepend(successDiv);
+                    setTimeout(() => successDiv.remove(), 8000);
+                } else {
+                    fpShowAlert(data.message || 'Gagal mereset password.');
+                }
+            } catch (e) {
+                fpShowAlert('Koneksi gagal. Periksa internet Anda.');
+            } finally {
+                fpSetLoading('btn-reset-password', false, '<span class="material-symbols-outlined text-[18px] align-middle mr-1">lock_reset</span> Reset Password');
+            }
+        }
+        // ========================= END FORGOT PASSWORD LOGIC =========================
+
         function displayRegisterErrors(errors) {
             const errorsDiv = document.getElementById('registerErrors');
             errorsDiv.classList.remove('hidden');
@@ -404,3 +709,4 @@
 </body>
 
 </html>
+

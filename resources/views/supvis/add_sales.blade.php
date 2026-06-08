@@ -130,7 +130,7 @@
     <div class="container">
         <h1 class="text-center mb-5 mt-5"><strong>Tambah Sales</strong></h1>
         <x-form-card>
-        <form id="addSalesForm" action="{{ route('sales.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="addSalesForm" action="{{ route('kasir.store_sales') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="profile-section">
                 <div class="avatar-container">
@@ -439,3 +439,5 @@
     </script>
 </body>
 </x-Supvis.SupvisLayouts>
+
+

@@ -200,9 +200,7 @@ background-color : #23a0b0;
                                 @endphp
                                 @foreach ($transaksiGroup as $transaksi)
                                     @php
-                                        $history = is_string($transaksi->history_setoran)
-                                            ? json_decode($transaksi->history_setoran, true)
-                                            : $transaksi->history_setoran;
+                                    $history = $transaksi->history_setoran;
                                     @endphp
                                     @if (is_array($history))
                                         @foreach ($history as $entry)
@@ -265,7 +263,7 @@ background-color : #23a0b0;
                     <tbody>
                         @forelse ($transaksiSudahSetor as $transaksi)
                             @php
-                                $history = json_decode($transaksi->history_setoran, true);
+                                $history = $transaksi->history_setoran;
                             @endphp
                             @if (is_array($history))
                                 @foreach ($history as $entry)
@@ -314,7 +312,7 @@ background-color : #23a0b0;
 
                     console.log("Data yang dikirim ke backend:", salesStatus); // Debugging
 
-                    fetch("{{ route('update.setoran.sales') }}", {
+                    fetch("{{ route('kasir.update.setoran.sales') }}", {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -460,3 +458,4 @@ background-color : #23a0b0;
             
     </body>
 </x-Supvis.SupvisLayouts>
+

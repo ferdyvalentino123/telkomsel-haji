@@ -113,7 +113,7 @@
         <!-- Welcome Banner -->
         <div class="welcome-banner">
             <div>
-                <h1 class="text-white fw-bold mb-2">Semangat Pagi, {{ Auth::user()->name }}! 👋</h1>
+                <h1 class="text-white fw-bold mb-2">Semangat Pagi, {{ Auth::user()->name }}!    </h1>
                 <p class="mb-0 opacity-75">Ayo capai targetmu hari ini. Setiap langkah kecil adalah kunci sukses!</p>
             </div>
             <div class="d-none d-md-block">
@@ -177,7 +177,7 @@
                                         </div>
                                         <div>
                                             <h6 class="mb-0 fw-bold">{{ $item->nama_pelanggan }}</h6>
-                                            <small class="text-muted">{{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d M, H:i') }}</small>
+                                            <small class="text-muted">{{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d M, H:i') }} &bull; <span class="fw-medium text-danger">{{ $item->produk ? $item->produk->produk_nama : 'Paket N/A' }}</span></small>
                                         </div>
                                     </div>
                                     <div class="text-end">
@@ -263,3 +263,4 @@
         </div>
 
 </x-Sales.SalesLayouts>
+

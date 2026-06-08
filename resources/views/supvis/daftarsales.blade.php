@@ -15,7 +15,7 @@
             <input type="text" id="filter-tempat" class="form-control" placeholder="Filter Tempat Tugas">
         </div>
         
-        <form action="{{ route('role-users.mass-update') }}" method="POST" id="massUpdateForm">
+        <form action="{{ route('kasir.role-users.mass-update') }}" method="POST" id="massUpdateForm">
             @csrf
             
 
@@ -53,7 +53,7 @@
             </table>
             
             <button type="submit" class="btn btn-success">Update Bertugas Massal</button>
-            <a href="{{ route('add_sales') }}">
+            <a href="{{ route('kasir.add_sales') }}">
                 <button type="button" class="btn btn-secondary">Tambah</button>
             </a>
         </form>
@@ -138,3 +138,4 @@
         });
     </script>
 </x-Supvis.SupvisLayouts>
+

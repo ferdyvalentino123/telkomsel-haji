@@ -24,6 +24,8 @@ class ProfileController extends Controller
             $view = 'role_users.edit_sales';
         } elseif ($role === 'kasir') {
             $view = 'role_users.edit_kasir';
+        } elseif ($role === 'travel') {
+            $view = 'travel.profil.index';
         }
 
         return view($view, compact('roleUsers'));

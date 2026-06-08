@@ -2,7 +2,7 @@
     <div class="container">
         <h2 class="mb-4">Edit Tugas Role User</h2>
 
-        <form action="{{ route('role-users.update', $user->id) }}" method="POST">
+        <form action="{{ route('kasir.role-users.update', $user->id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -23,3 +23,4 @@
         </form>
     </div>
 </x-Supvis.SupvisLayouts>
+

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MerchandiseController;
 use App\Http\Controllers\Admin\StockHistoryController;
 use App\Http\Controllers\Admin\RoleUsersController;
 use App\Http\Controllers\Admin\TransaksiController;
+use App\Http\Controllers\Admin\TravelAktivasiController;
 
 // Admin Routes group with auth and admin middleware
 Route::middleware(['auth', 'admin'])->prefix('programhaji/admin')->group(function () {
@@ -43,10 +44,16 @@ Route::middleware(['auth', 'admin'])->prefix('programhaji/admin')->group(functio
 
     // Monitoring & Financial Audit
     Route::prefix('monitor')->name('admin.monitor.')->group(function () {
-        Route::get('/setoran', [\App\Http\Controllers\Kasir\TransaksiController::class, 'monitorSetoran'])->name('setoran');
-        Route::get('/void', [\App\Http\Controllers\Kasir\TransaksiController::class, 'supvisvoid'])->name('void');
-        Route::delete('/void/{id}', [\App\Http\Controllers\Kasir\TransaksiController::class, 'supvisdestroy'])->name('destroy');
+        Route::get('/setoran', [TransaksiController::class, 'monitorSetoran'])->name('setoran');
+        Route::post('/setoran/approve', [TransaksiController::class, 'approveSetoran'])->name('setoran.approve');
+        Route::get('/void', [TransaksiController::class, 'monitorVoid'])->name('void');
+        Route::delete('/void/{id}', [TransaksiController::class, 'destroyVoid'])->name('destroy');
+    });
+
+    // Aktivasi Travel - Injeksi Paket Jamaah Haji
+    Route::prefix('travel-aktivasi')->name('admin.travel-aktivasi.')->group(function () {
+        Route::get('/', [TravelAktivasiController::class, 'index'])->name('index');
+        Route::post('/{id}/upload', [TravelAktivasiController::class, 'upload'])->name('upload');
     });
 
 });
-

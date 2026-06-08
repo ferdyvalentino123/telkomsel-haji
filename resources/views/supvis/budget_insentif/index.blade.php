@@ -1,4 +1,7 @@
-<x-Supvis.SupvisLayouts>
+@php
+    $layout = Auth::user()->hasRole('kasir') ? 'Kasir.KasirLayouts' : 'Supvis.SupvisLayouts';
+@endphp
+<x-dynamic-component :component="$layout">
     <div class="container mt-4">
         <h2 class="text-center mb-4">Budget Insentif</h2>
         @if (session('status'))
@@ -20,7 +23,7 @@
 
         <div class="card p-4 shadow-sm">
             <h3 class="mb-4">Update Budget Insentif</h3>
-            <form action="{{ route('supvis.budget_insentif.update') }}" method="POST">
+            <form action="{{ route('kasir.budget_insentif.update') }}" method="POST">
                 @csrf
 
                 <div class="mb-3">
@@ -47,10 +50,12 @@
             background: linear-gradient(135deg, rgb(33, 226, 62), #2575FC);
             color: white; 
             border: none; 
+            border-radius: 5px;
+            padding: 10px 20px;
         }
 
         .btn-custom:hover {
             opacity: 0.9;
         }
     </style>
-</x-Supvis.SupvisLayouts>
+</x-dynamic-component>

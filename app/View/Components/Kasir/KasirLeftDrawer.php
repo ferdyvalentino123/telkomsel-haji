@@ -1,12 +1,12 @@
 <?php
 
-namespace App\View\Components\kasir;
+namespace App\View\Components\Kasir;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class kasirleftDrawer extends Component
+class KasirLeftDrawer extends Component
 {
     /**
      * Create a new component instance.

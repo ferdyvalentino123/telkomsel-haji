@@ -1,11 +1,8 @@
-<x-Supvis.SupvisLayouts>
+@php
+    $layout = Auth::user()->hasRole('kasir') ? 'Kasir.KasirLayouts' : 'Supvis.SupvisLayouts';
+@endphp
+<x-dynamic-component :component="$layout">
 <link href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
-
-    <style>
-        
-       
-
-    </style>
     <div class="container">
         <h2 class="text-center mt-5 mb-5"><b>Riwayat Perubahan Budget</b></h2>
 
@@ -15,7 +12,7 @@
                     <div class="card-header" style="color: black;">
                         <div class="d-flex justify-content-between align-items-center">
                             <span>Total Budget</span>
-                            <a href="{{ route('supvis.budget_insentif.index') }}" class="btn btn-sm btn-light">Edit</a>
+                            <a href="{{ route('kasir.budget_insentif.index') }}" class="btn btn-sm btn-light">Edit</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -42,19 +39,16 @@
         </div>
         <table id="budget-table" class="table table-bordered">
             <thead style="background-color: #23a0b0;" >
-                <tr class="text-center">
-                    <th >ID</th>
-                    <th>Perubahan Budget</th>
-                    <th>Budget Sebelum</th>
-                    <th>Budget Sesudah</th>
-                    <th>Aksi</th>
-                    <th>Tanggal</th>
+                <tr class="text-center text-white">
+                    <th class="text-white">ID</th>
+                    <th class="text-white">Perubahan Budget</th>
+                    <th class="text-white">Budget Sebelum</th>
+                    <th class="text-white">Budget Sesudah</th>
+                    <th class="text-white">Aksi</th>
+                    <th class="text-white">Tanggal</th>
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $currentTotalBudget = $totalBudget;
-                @endphp
                 @foreach ($budgetHistories as $history)
                     <tr class="text-center">
                         <td>{{ $history->id }}</td>
@@ -62,7 +56,7 @@
                             {{ number_format($history->change_amount, 2) }}
                         </td>
                         <td>{{ number_format($history->previous_budget, 2) }}</td>
-                        <td>{{ number_format($currentTotalBudget, 2) }}</td>
+                        <td>{{ number_format($history->current_budget, 2) }}</td>
                         <td>
                             <span class="badge {{ $history->action === 'add' ? 'bg-success' : 'bg-warning' }}">
                                 {{ $history->action === 'add' ? 'Penambahan' : 'Perubahan' }}
@@ -73,12 +67,10 @@
                 @endforeach
             </tbody>
         </table>
-
-
-
     </div>
 
     {{-- Script DataTables --}}
+    <script src="//code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -101,4 +93,5 @@
             });
         });
     </script>
-</x-Supvis.SupvisLayouts>
+</x-dynamic-component>
+

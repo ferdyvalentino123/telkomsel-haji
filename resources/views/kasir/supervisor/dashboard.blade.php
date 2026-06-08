@@ -66,7 +66,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="bg-white rounded-lg shadow p-6">
+        {{-- <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-bold text-gray-900 mb-4">Informasi Kasir</h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -86,7 +86,9 @@
                     <p class="text-gray-900 font-medium">{{ Auth::user()->updated_at?->format('d-m-Y H:i') ?? 'N/A' }}</p>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 </div>
 @endsection
+
+

@@ -447,6 +447,9 @@
                     <div class="info-content">
                         <div class="info-label">Paket</div>
                         <div class="info-value">{{ $transaksi->produk->produk_nama ?? 'Produk Tidak Ditemukan' }}</div>
+                        <div class="info-label mt-1" style="font-size: 0.75rem; color: #555;">
+                            <i class="fas fa-wifi me-1" style="color: var(--tsel-primary);"></i> {{ $transaksi->produk->kuota ?? 'Utama' }} &bull; {{ $transaksi->produk->masa_aktif ?? '30 Hari' }}
+                        </div>
                         <div class="info-label mt-1" style="font-size: 0.7rem; opacity: 0.8;">
                             <i class="fas fa-calendar-check me-1"></i> Aktivasi: {{ \Carbon\Carbon::parse($transaksi->aktivasi_tanggal)->translatedFormat('d M Y') }}
                         </div>
@@ -497,7 +500,7 @@
                                         <i class="fas fa-hourglass-half"></i> Menunggu Aktivasi
                                     </span>
                                     <small class="text-muted" style="font-size: 0.65rem; margin-top: 2px;">
-                                        <i class="fas fa-info-circle"></i> Proses tim 1x24 jam
+                                        <i class="fas fa-info-circle"></i> Paket dalam proses aktivasi!
                                     </small>
                                 </div>
                             @else
@@ -675,6 +678,7 @@
         }
     </script>
 </x-pelanggan.layouts>
+
 
 
 

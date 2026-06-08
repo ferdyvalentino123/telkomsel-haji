@@ -167,7 +167,7 @@
                     <label class="input-label">Role Akses</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
-                        <input type="text" class="form-control bg-light" value="{{ ucfirst($roleUsers->role) }}" disabled>
+                        <input type="text" class="form-control bg-light" value="{{ $roleUsers->role === 'supervisor' ? 'Kasir' : ucfirst($roleUsers->role) }}" disabled>
                     </div>
                     <small class="text-muted fst-italic mt-1 d-block"><i class="fas fa-lock"></i> Role tidak dapat diubah untuk akun sendiri.</small>
                 </div>
@@ -199,3 +199,4 @@
     </div>
   </form>
 </div>
+

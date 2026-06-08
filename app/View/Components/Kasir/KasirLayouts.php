@@ -1,6 +1,6 @@
 <?php
 
-namespace App\View\Components\kasir;
+namespace App\View\Components\Kasir;
 
 use Closure;
 use Illuminate\Contracts\View\View;

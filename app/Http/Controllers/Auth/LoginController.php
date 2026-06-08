@@ -54,7 +54,7 @@ class LoginController extends Controller
                     return redirect()->route('admin.home');
                 case 'supervisor':
                     Auth::login($user);
-                    return redirect()->route('supvis.home');
+                    return redirect()->route('kasir.home');
                 case 'sales':
                     Auth::login($user);
                     return redirect()->route('sales.home');
@@ -62,6 +62,10 @@ class LoginController extends Controller
                     Auth::login($user);
                     Log::info('Pelanggan logged in, redirecting to pelanggan.home');
                     return redirect()->route('pelanggan.home');
+                case 'travel':
+                    Auth::login($user);
+                    Log::info('Travel logged in, redirecting to travel.home');
+                    return redirect()->route('travel.home');
                 default:
                     Log::warning('Invalid role: ' . $user->role);
                     return back()->withErrors(['role' => 'Role tidak valid untuk mengakses halaman ini.']);
@@ -90,7 +94,7 @@ class LoginController extends Controller
             $validatedData = $request->validate([
                 'nama' => 'required|string|max:255',
                 'email' => 'required|email|unique:role_users,email',
-                'nomor_hp' => 'required|string|max:20',
+                'nomor_hp' => ['required', 'string', 'max:20', 'regex:/^08(11|12|13|21|22|23|51|52|53)[0-9]{5,9}$/'],
                 'tempat_tugas' => 'required|string|max:255',
                 'pin' => 'required|string|min:6|max:20',
                 'pin_confirmation' => 'required|string|same:pin',
@@ -102,6 +106,7 @@ class LoginController extends Controller
                 'email.required' => 'Email wajib diisi.',
                 'email.email' => 'Format email tidak valid.',
                 'nomor_hp.required' => 'Nomor HP wajib diisi.',
+                'nomor_hp.regex' => 'Nomor telepon harus diawali dengan prefix Telkomsel (contoh: 0812, 0813, 0821, 0852, dll).',
                 'tempat_tugas.required' => 'Alamat wajib diisi.',
                 'pin.required' => 'PIN wajib diisi.',
                 'pin_confirmation.required' => 'Konfirmasi PIN wajib diisi.',
@@ -159,7 +164,7 @@ class LoginController extends Controller
     public function redirectToGoogle()
     {
         Log::info("Google redirect initiated");
-        return Socialite::driver("google")->redirect();
+        return Socialite::driver("google")->with(['prompt' => 'select_account consent'])->redirect();
     }
 
     /**
@@ -231,5 +236,6 @@ class LoginController extends Controller
         }
     }
 }
+
 
 

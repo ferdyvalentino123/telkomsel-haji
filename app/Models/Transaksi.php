@@ -52,6 +52,10 @@ class Transaksi extends Model
         'status', // Field untuk status transaksi
         'snap_token', // Field untuk menyimpan Snap token
         'bukti_injeksi', // Field untuk menyimpan path file bukti injeksi dari tim
+        'injeksi_oleh', // Nama admin yang melakukan injeksi
+        'injeksi_at',   // Waktu injeksi dilakukan
+        'catatan_injeksi', // Catatan opsional dari admin
+        'serial_number', // Serial number SIM
     ];
 
     // Relasi ke Produk
@@ -70,12 +74,6 @@ class Transaksi extends Model
     public function merchandises()
     {
         return $this->belongsToMany(Merchandise::class, 'transaksi_merchandise', 'transaksi_id', 'merchandise_id');
-    }
-
-    // Akses sejarah setoran
-    public function getHistorySetoranAttribute()
-    {
-        return json_decode($this->attributes['history_setoran'], true) ?? [];
     }
 
     // Relasi ke RoleUsers (Supervisor)
@@ -103,6 +101,12 @@ class Transaksi extends Model
     public function sales()
     {
         return $this->belongsTo(RoleUsers::class, 'nama_sales', 'name');
+    }
+
+    // Relasi supervisor dengan nama yang lebih deskriptif
+    public function supervisor()
+    {
+        return $this->belongsTo(RoleUsers::class, 'id_supervisor');
     }
 }
 

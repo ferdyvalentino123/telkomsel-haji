@@ -13,7 +13,7 @@ class EnsureKasir
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        if (Auth::check() && Auth::user()->role === 'kasir') {
+        if (Auth::check() && in_array(Auth::user()->role, ['kasir', 'supervisor'])) {
             return $next($request);
         }
 

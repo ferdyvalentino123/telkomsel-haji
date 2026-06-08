@@ -28,12 +28,23 @@
             </tr>
           </thead>
           <tbody>
-            @forelse(\App\Models\RoleUsers::paginate(15) as $user)
+            @php
+              $roleOrder = ['admin' => 1, 'supervisor' => 2, 'kasir' => 2, 'sales' => 3, 'travel' => 4, 'pelanggan' => 5];
+              $no = ($users->currentPage() - 1) * $users->perPage() + 1;
+            @endphp
+            @forelse($users as $user)
               <tr>
-                <td><strong>{{ $loop->iteration }}</strong></td>
+                <td><strong>{{ $no++ }}</strong></td>
                 <td><strong>{{ $user->name }}</strong></td>
                 <td>{{ $user->email }}</td>
-                <td><span class="badge bg-primary">{{ ucfirst($user->role) }}</span></td>
+                <td>
+                  @php
+                    $roleColors = ['admin' => 'danger', 'supervisor' => 'info', 'kasir' => 'info', 'sales' => 'warning', 'travel' => 'primary', 'pelanggan' => 'secondary'];
+                    $color = $roleColors[$user->role] ?? 'secondary';
+                    $label = $user->role === 'supervisor' ? 'Kasir' : ucfirst($user->role);
+                  @endphp
+                  <span class="badge bg-{{ $color }}">{{ $label }}</span>
+                </td>
                 <td><span class="badge bg-success">Aktif</span></td>
                 <td>
                   <div class="d-flex gap-1">
@@ -56,6 +67,14 @@
           </tbody>
         </table>
       </div>
+      @if($users->hasPages())
+        <div class="d-flex justify-content-between align-items-center px-3 py-3 border-top">
+          <small class="text-muted">
+            Menampilkan {{ $users->firstItem() }}–{{ $users->lastItem() }} dari {{ $users->total() }} pengguna
+          </small>
+          {{ $users->links('pagination::bootstrap-5') }}
+        </div>
+      @endif
     </div>
   </div>
 </div>
@@ -88,3 +107,4 @@
 @endpush
 
 @endsection
+

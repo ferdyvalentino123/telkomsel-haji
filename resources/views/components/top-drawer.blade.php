@@ -21,7 +21,9 @@
                     $profileRoute = route('admin.users.edit', Auth::user()->id);
                 } elseif (Auth::user()->role === 'pelanggan') {
                     $profileRoute = route('pelanggan.profil');
-                } elseif (in_array(Auth::user()->role, ['sales', 'supervisor', 'kasir'])) {
+                } elseif (in_array(Auth::user()->role, ['sales', 'Kasir', 'kasir'])) {
+                    $profileRoute = route('role_users.edit');
+                } elseif (Auth::user()->role === 'travel') {
                     $profileRoute = route('role_users.edit');
                 }
             @endphp
@@ -42,3 +44,4 @@
         </ul>
     </div>
 </nav>
+

@@ -25,4 +25,8 @@ class Merchandise extends Model
     {
         return $this->belongsToMany(Produk::class, 'merchandise_produk');
     }
+
+    protected $casts = [
+        'merch_terambil_history' => 'array',
+    ];
 }

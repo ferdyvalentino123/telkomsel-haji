@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Produk;
+use App\Models\RoleUsers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -12,7 +13,8 @@ class ProdukController extends Controller
     {
         $search = $request->input('search');
 
-        $produk = Produk::when($search, function ($query, $search) {
+        $produk = Produk::with('travel')
+            ->when($search, function ($query, $search) {
                 $query->where('produk_nama', 'like', "%{$search}%")
                       ->orWhere('produk_detail', 'like', "%{$search}%");
             })
@@ -25,17 +27,21 @@ class ProdukController extends Controller
 
     public function create()
     {
-        return view("admin.produk.form");
+        $travels = RoleUsers::where('role', 'travel')->orderBy('name')->get();
+        return view("admin.produk.form", compact('travels'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            "produk_nama" => "required|string|max:255",
-            "produk_harga" => "required|numeric|min:0",
-            "produk_stok" => "required|integer|min:0",
-            "produk_deskripsi" => "nullable|string",
+            "produk_nama"    => "required|string|max:255",
+            "produk_harga"   => "required|numeric|min:0",
+            "produk_stok"    => "required|integer|min:0",
+            "produk_detail"  => "nullable|string",
+            "kuota"          => "nullable|string",
+            "masa_aktif"     => "nullable|string",
             "produk_insentif" => "nullable|numeric|min:0",
+            "travel_id"      => "nullable|exists:role_users,id",
         ]);
 
         $produk = Produk::create($validated);
@@ -59,17 +65,21 @@ class ProdukController extends Controller
 
     public function edit(Produk $produk)
     {
-        return view("admin.produk.form", compact("produk"));
+        $travels = RoleUsers::where('role', 'travel')->orderBy('name')->get();
+        return view("admin.produk.form", compact('produk', 'travels'));
     }
 
     public function update(Request $request, Produk $produk)
     {
         $validated = $request->validate([
-            "produk_nama" => "required|string|max:255",
-            "produk_harga" => "required|numeric|min:0",
-            "produk_stok" => "required|integer|min:0",
-            "produk_deskripsi" => "nullable|string",
+            "produk_nama"    => "required|string|max:255",
+            "produk_harga"   => "required|numeric|min:0",
+            "produk_stok"    => "required|integer|min:0",
+            "produk_detail"  => "nullable|string",
+            "kuota"          => "nullable|string",
+            "masa_aktif"     => "nullable|string",
             "produk_insentif" => "nullable|numeric|min:0",
+            "travel_id"      => "nullable|exists:role_users,id",
         ]);
 
         $oldStock = $produk->produk_stok;

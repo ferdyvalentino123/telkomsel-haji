@@ -1,4 +1,4 @@
-﻿<x-pelanggan.layouts>
+<x-pelanggan.layouts>
     <style>
         :root {
             --tsel-primary: #bc0007;      /* Dari login page */
@@ -90,13 +90,13 @@
         .category-title {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--tsel-border);
+            margin-bottom: 25px;
+            padding-left: 15px;
+            border-left: 4px solid var(--tsel-primary);
         }
 
         .category-title h3 {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--tsel-dark);
             margin: 0;
@@ -107,7 +107,7 @@
 
         .category-title h3 i {
             color: var(--tsel-primary);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .badge-count {
@@ -121,179 +121,189 @@
             border: 1px solid var(--tsel-border);
         }
 
-        .product-card {
+        .product-card-link {
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            display: block;
+            height: 100%;
+        }
+        .product-card-link:hover {
+            transform: scale(1.02);
+            text-decoration: none;
+        }
+
+        .product-card-white {
             background: #fff;
             border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            transition: all 0.3s ease;
-            border: 1px solid var(--tsel-border);
+            padding: 16px 16px 12px 16px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
             height: 100%;
             display: flex;
             flex-direction: column;
             position: relative;
         }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(188, 0, 7, 0.08);
-            border-color: var(--tsel-primary-light);
+        
+        .out-of-stock {
+            opacity: 0.7;
+            filter: grayscale(100%);
         }
 
-        .product-icon {
-            width: 56px;
-            height: 56px;
-            background: rgba(188, 0, 7, 0.05);
-            border-radius: 12px;
+        .card-badges {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-            color: var(--tsel-primary);
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            border-top-left-radius: 16px;
+            border-bottom-right-radius: 16px;
         }
 
-        .product-title {
-            font-size: 1.15rem;
+        .badge-primary {
+            background: #bc0007; /* Telkomsel Red */
+            color: white;
+            font-size: 0.65rem;
             font-weight: 700;
-            color: var(--tsel-dark);
-            margin-bottom: 15px;
-            line-height: 1.4;
-            min-height: 48px;
-            display: flex;
-            align-items: flex-start;
+            padding: 4px 12px;
         }
 
-        .product-detail {
-            background: var(--tsel-gray);
-            border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 20px;
-            flex-grow: 1;
-            border: 1px solid var(--tsel-border);
+        .badge-secondary {
+            background: #475569;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 4px 12px;
         }
 
-        .product-detail-item {
+        .card-main-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
-        .product-detail-item:not(:last-child) {
-            border-bottom: 1px dashed #d1d5db;
-        }
-
-        .product-detail-label {
-            font-weight: 500;
-            color: var(--tsel-text-muted);
+        .title-wrapper {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        .product-detail-value {
-            font-weight: 700;
-            color: var(--tsel-dark);
-            font-size: 0.95rem;
-            text-align: right;
-        }
-
-        .product-price-section {
-            margin-bottom: 20px;
-        }
-
-        .product-price-original {
-            font-size: 0.9rem;
-            color: #999;
-            text-decoration: line-through;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        .price-current {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--tsel-primary);
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
             gap: 10px;
-            line-height: 1;
         }
 
-        .discount-badge {
-            display: inline-block;
-            background: var(--tsel-primary-light);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.75rem;
+        .main-icon {
+            color: #bc0007; /* Telkomsel Red */
+            font-size: 1.2rem;
         }
 
-        .stock-badge-container {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-        }
-
-        .stock-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        .stock-badge.low-stock {
-            background: #ffebee;
-            color: var(--tsel-primary);
-        }
-
-        .btn-buy {
-            background: var(--tsel-primary);
-            color: #fff;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-weight: 600;
+        .package-title {
             font-size: 1rem;
-            width: 100%;
-            transition: all 0.2s ease;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        .package-duration {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .detail-box {
+            background: #fdf2f2; /* Light Red */
+            border-radius: 8px;
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .detail-box i {
+            color: #10b981; /* Green check */
+            font-size: 0.85rem;
+        }
+
+        .detail-box span {
+            font-size: 0.75rem;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .card-divider {
+            border: 0;
+            height: 1px;
+            background: #f1f5f9;
+            margin: auto 0 12px 0;
+        }
+
+        .card-footer-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .original-price-strike {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-decoration: line-through;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
+        .final-price {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #1e293b; /* Dark Navy/Black */
+        }
+
+        .action-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            text-decoration: none;
+            color: #bc0007;
+            font-size: 0.8rem;
         }
 
-        .btn-buy:hover {
-            background: #93000a;
-            color: #fff;
+        .out-of-stock-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(1px);
         }
 
-        .btn-buy:disabled, .btn-buy.disabled {
-            background: #e2e2e2;
-            color: #a0a0a0;
-            cursor: not-allowed;
-            pointer-events: none;
+        .out-of-stock-overlay span {
+            background: #1e293b;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
         }
 
         .info-banner {
-            background: #fff;
-            border: 1px solid var(--tsel-border);
-            border-radius: 16px;
-            padding: 30px;
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+            border: 1px solid rgba(188,0,7,0.1);
+            border-radius: 20px;
+            padding: 40px 30px;
             text-align: center;
-            margin-top: 40px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            margin-top: 50px;
+            box-shadow: 0 10px 30px rgba(188, 0, 7, 0.05);
             position: relative;
             overflow: hidden;
         }
@@ -486,105 +496,74 @@
     </h2>
 
     @if($produks->count() > 0)
-    @php
-        // Kelompokkan produk berdasarkan kategori
-        $kategoris = [
-            'SHAFIRA' => [],
-            'TAKHOBAR' => [],
-            'MUHAMMADIYAH' => []
-        ];
-        
-        foreach($produks as $produk) {
-            if(str_starts_with($produk->produk_nama, 'SHAFIRA')) {
-                $kategoris['SHAFIRA'][] = $produk;
-            } elseif(str_starts_with($produk->produk_nama, 'TAKHOBAR')) {
-                $kategoris['TAKHOBAR'][] = $produk;
-            } elseif(str_starts_with($produk->produk_nama, 'MUHAMMADIYAH') || str_starts_with($produk->produk_nama, 'MUHAMMDIYAH')) {
-                $kategoris['MUHAMMADIYAH'][] = $produk;
-            }
-        }
-    @endphp
-
-    @foreach($kategoris as $kategori => $produkList)
-        @if(count($produkList) > 0)
-        <!-- Kategori Ditampilkan Secara Elegan -->
-        <div class="category-wrapper">
-            <div class="category-title">
-                <h3>
-                    <i class="fas fa-layer-group"></i> 
-                    Paket {{ ucfirst($kategori) }}
-                </h3>
-                <span class="badge-count">{{ count($produkList) }} Pilihan</span>
-            </div>
-            
-            <div class="row">
-                @foreach($produkList as $produk)
-                <div class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
-                    <div class="product-card w-100">
-
-
-                        <div class="product-icon">
-                            <i class="fas fa-sim-card"></i>
-                        </div>
+        <div class="row">
+            @foreach($produks as $produk)
+            <div class="col-lg-6 col-md-12 mb-4 d-flex align-items-stretch">
+                <a href="{{ $produk->produk_stok > 0 ? route('pelanggan.produk.beli', $produk->id) : '#' }}" class="product-card-link w-100">
+                    <div class="product-card-white {{ $produk->produk_stok < 1 ? 'out-of-stock' : '' }}">
                         
-
-
-                        <h3 class="product-title">{{ str_replace($kategori.'_', '', $produk->produk_nama) }}</h3>
-
-                        <div class="product-detail">
-                            <div class="product-detail-item">
-                                <span class="product-detail-label">
-                                    <i class="fas fa-database"></i> Kuota
-                                </span>
-                                <span class="product-detail-value">
-                                    {{ $produk->produk_detail ?? 'Lihat detail' }}
-                                </span>
-                            </div>
-                            <div class="product-detail-item">
-                                <span class="product-detail-label">
-                                    <i class="fas fa-calendar-check"></i> Masa Aktif
-                                </span>
-                                <span class="product-detail-value">
-                                    30 Hari
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="product-price-section">
+                        <div class="card-badges">
+                            <span class="badge-primary">RoaMAX</span>
                             @if($produk->produk_diskon > 0)
-                                <span class="product-price-original">
-                                    Rp {{ number_format($produk->produk_harga, 0, ',', '.') }}
-                                </span>
-                                @php
-                                    $harga_setelah_diskon = $produk->produk_harga - $produk->produk_diskon;
-                                @endphp
-                                <div class="price-current">
-                                    Rp {{ number_format($harga_setelah_diskon, 0, ',', '.') }}
-                                    <span class="discount-badge">
-                                        Hemat Rp {{ number_format($produk->produk_diskon / 1000, 0) }}k
-                                    </span>
-                                </div>
-                            @else
-                                <div class="price-current">Rp {{ number_format($produk->produk_harga, 0, ',', '.') }}</div>
+                                <span class="badge-secondary">Hemat Rp {{ number_format($produk->produk_diskon / 1000, 0) }}k</span>
                             @endif
                         </div>
 
-                        @if($produk->produk_stok > 0)
-                            <a href="{{ route('pelanggan.produk.beli', $produk->id) }}" class="btn-buy mt-auto">
-                                <i class="fas fa-shopping-cart"></i> Pilih Paket
-                            </a>
+                        <div class="card-main-info" style="margin-bottom: 8px;">
+                            <div class="title-wrapper">
+                                <i class="fas fa-sim-card main-icon"></i>
+                                <h3 class="package-title">{{ $produk->produk_nama }}</h3>
+                            </div>
+                            <span class="package-duration">{{ $produk->masa_aktif ?? '30 Hari' }}</span>
+                        </div>
+
+                        @if($produk->produk_detail)
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0; margin-bottom: 12px; line-height: 1.4; padding-left: 2px;">
+                            {{ $produk->produk_detail }}
+                        </div>
                         @else
-                            <button class="btn-buy disabled mt-auto" disabled>
-                                <i class="fas fa-times-circle"></i> Stok Habis
-                            </button>
+                        <div style="height: 4px;"></div>
+                        @endif
+
+                        <div class="detail-box" style="margin-top: auto;">
+                            <i class="fas fa-check-circle"></i> 
+                            <span>Kuota {{ $produk->kuota ?? 'Utama' }}</span>
+                        </div>
+                        <div class="detail-box" style="margin-top: auto;">
+                            <i class="fas fa-check-circle"></i> 
+                            <span>Masa Aktif {{ $produk->masa_aktif ?? 'Utama' }}</span>
+                        </div>
+
+                        <hr class="card-divider">
+
+                        <div class="card-footer-flex">
+                            <div class="price-container">
+                                @if($produk->produk_diskon > 0)
+                                    @php $harga_setelah_diskon = $produk->produk_harga - $produk->produk_diskon; @endphp
+                                    <span class="original-price-strike">Rp {{ number_format($produk->produk_harga, 0, ',', '.') }}</span>
+                                    <span class="final-price">Rp {{ number_format($harga_setelah_diskon, 0, ',', '.') }}</span>
+                                @else
+                                    <span class="final-price">Rp {{ number_format($produk->produk_harga, 0, ',', '.') }}</span>
+                                @endif
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: #bc0007; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">Beli</span>
+                                <div class="action-icon">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @if($produk->produk_stok < 1)
+                        <div class="out-of-stock-overlay">
+                            <span>Stok Habis</span>
+                        </div>
                         @endif
                     </div>
-                </div>
-                @endforeach
+                </a>
             </div>
+            @endforeach
         </div>
-        @endif
-    @endforeach
 
     @else
     <div class="empty-state">
@@ -597,7 +576,8 @@
     <!-- Info Banner -->
     <div class="info-banner">
         <h3><i class="fas fa-headset" style="color: var(--tsel-primary);"></i> Pusat Bantuan</h3>
-        <p>Hubungi CS kami di <strong>188</strong> (Bebas Pulsa) atau email ke <strong>cs@telkomsel.co.id</strong>.<br>Kami siap membantu Anda 24 jam penuh.</p>
+        <p>Hubungi CS kami di <strong>188</strong> (Bebas Pulsa) atau email ke <strong>cs@telkomsel.co.id</strong></p>
     </div>
 
 </x-pelanggan.layouts>
+

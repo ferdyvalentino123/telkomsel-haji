@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+use Midtrans\Config;
+use Midtrans\Snap;
 
 use Imagick;
 
@@ -46,6 +50,8 @@ class TransaksiController extends Controller
             'nomor_injeksi' => $request->nomor_injeksi,
             'telepon_pelanggan' => $request->telepon_pelanggan,
             'addon_perdana' => $request->has('addon_perdana') ? 1 : 0,
+            'kuota' => $selectedProduk->kuota,
+            'masa_aktif' => $selectedProduk->masa_aktif,
         ]);
 
         try {
@@ -91,26 +97,35 @@ class TransaksiController extends Controller
 
             $selectedProduk->increment('produk_terjual', 1);
             $selectedMerchandise->increment('merch_terambil', 1);
-            $history = json_decode($selectedProduk->produk_terjual_history ?? '[]', true);
+            $history = $selectedProduk->produk_terjual_history;
+            if (!is_array($history)) {
+                $history = [];
+            }
             $history[] = [
                 'tanggal' => Carbon::parse($request->tanggal_transaksi)->toDateTimeString(),
                 'jumlah' => 1,
                 'produk_nama' => $selectedProduk->produk_nama
             ];
             $selectedProduk->update([
-                'produk_terjual_history' => json_encode($history)
+                'produk_terjual_history' => $history
             ]);
             $selectedProduk->refresh();
-            $merchHistory = json_decode($selectedMerchandise->merch_terambil_history ?? '[]', true);
+
+            $merchHistory = $selectedMerchandise->merch_terambil_history;
+            if (!is_array($merchHistory)) {
+                $merchHistory = json_decode($selectedMerchandise->merch_terambil_history ?? '[]', true) ?? [];
+            }
             $merchHistory[] = [
                 'tanggal' => Carbon::parse($request->tanggal_transaksi)->toDateTimeString(),
                 'jumlah' => 1,
                 'merch_nama' => $selectedMerchandise->merch_nama
             ];
             $selectedMerchandise->update([
-                'merch_terambil_history' => json_encode($merchHistory)
+                'merch_terambil_history' => $merchHistory
             ]);
-            Transaksi::create([
+            $isTunai = ($request->metode_pembayaran === 'Tunai');
+
+            $transaksi = Transaksi::create([
                 'id_transaksi' => $request->id_transaksi,
                 'nomor_telepon' => $request->nomor_telepon,
                 'nama_pelanggan' => $request->nama_pelanggan,
@@ -124,16 +139,168 @@ class TransaksiController extends Controller
                 'merchandise' => $selectedMerchandise->merch_nama,
                 'metode_pembayaran' => $request->metode_pembayaran ?? 'Tunai',
                 'nomor_injeksi' => $request->nomor_injeksi,
-                'is_paid' => true,
+                'is_paid' => $isTunai,
+                'status' => $isTunai ? 'lunas' : 'pending',
                 'addon_perdana' => $request->has('addon_perdana') ? 1 : 0,
             ]);
             \DB::commit();
-            return redirect()->route('sales.transaksi')->with('success', 'Transaksi berhasil disimpan!');
+
+            if ($isTunai) {
+                // Hapus form_data agar reset
+                $request->session()->forget('form_data');
+                return redirect()->route('sales.transaksi')->with('success', 'Transaksi Tunai berhasil disimpan dan lunas!');
+            } else {
+                return redirect()->route('sales.pembayaran', $transaksi->id)->with('info', 'Silakan selesaikan pembayaran Nontunai.');
+            }
         } catch (\Exception $e) {
             \DB::rollBack();
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
                 ->withInput();
+        }
+    }
+
+    public function pembayaran($id)
+    {
+        $transaksi = Transaksi::where('id', $id)->with('produk')->firstOrFail();
+
+        if ($transaksi->status == 'lunas' || $transaksi->is_paid) {
+            return redirect()->route('sales.transaksi')
+                ->with('info', 'Transaksi ini sudah lunas.');
+        }
+
+        try {
+            Config::$serverKey = config('services.midtrans.server_key');
+            Config::$isProduction = config('services.midtrans.is_production');
+            Config::$isSanitized = config('services.midtrans.is_sanitized');
+            Config::$is3ds = config('services.midtrans.is_3ds');
+
+            if (empty($transaksi->snap_token)) {
+                $params = [
+                    'transaction_details' => [
+                        'order_id' => $transaksi->id_transaksi,
+                        'gross_amount' => (int) $transaksi->total_harga,
+                    ],
+                    'customer_details' => [
+                        'first_name' => $transaksi->nama_pelanggan,
+                        'phone' => $transaksi->telepon_pelanggan ?? '081234567890',
+                    ],
+                    'item_details' => [
+                        [
+                            'id' => $transaksi->produk_id,
+                            'price' => (int) $transaksi->produk->produk_harga_akhir,
+                            'quantity' => 1,
+                            'name' => substr($transaksi->produk->produk_nama, 0, 50),
+                        ]
+                    ],
+                    'callbacks' => [
+                        'finish' => route('sales.pembayaran.callback', $transaksi->id),
+                        'unfinish' => route('sales.pembayaran.callback', $transaksi->id),
+                        'error' => route('sales.pembayaran.callback', $transaksi->id)
+                    ]
+                ];
+
+                $snapToken = Snap::getSnapToken($params);
+                $transaksi->snap_token = $snapToken;
+                $transaksi->save();
+            } else {
+                $snapToken = $transaksi->snap_token;
+            }
+
+            return view('sales.pembayaran', compact('transaksi', 'snapToken'));
+
+        } catch (\Exception $e) {
+            Log::error('Midtrans Sales Error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal membuat pembayaran: ' . $e->getMessage());
+        }
+    }
+
+    public function callbackPembayaran(Request $request, $id)
+    {
+        $transaksi = Transaksi::where('id', $id)->firstOrFail();
+        
+        try {
+            Config::$serverKey = config('services.midtrans.server_key');
+            Config::$isProduction = config('services.midtrans.is_production');
+            
+            $status = \Midtrans\Transaction::status($transaksi->id_transaksi);
+            
+            if ($status->transaction_status == 'settlement' || $status->transaction_status == 'capture') {
+                $transaksi->status = 'lunas';
+                $transaksi->is_paid = true;
+                $transaksi->metode_pembayaran = ($status->payment_type ?? 'QRIS');
+                $transaksi->save();
+                
+                // Note: Stock is already deducted at the start in submit() method.
+                // We don't deduct it again here. The Pelanggan notificationHandler will see it's lunas.
+
+                // Hapus form_data agar reset
+                $request->session()->forget('form_data');
+                
+                return redirect()->route('sales.transaksi')
+                    ->with('success', 'Pembayaran berhasil! Transaksi selesai.');
+            } else if ($status->transaction_status == 'pending') {
+                return redirect()->route('sales.transaksi')
+                    ->with('warning', 'Pembayaran masih pending.');
+            } else {
+                return redirect()->route('sales.transaksi')
+                    ->with('error', 'Pembayaran dibatalkan atau kadaluarsa.');
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Midtrans Sales Callback Error: ' . $e->getMessage());
+            return redirect()->route('sales.transaksi')
+                ->with('error', 'Gagal verifikasi pembayaran.');
+        }
+    }
+
+    public function cancelPembayaran($id)
+    {
+        try {
+            \DB::beginTransaction();
+
+            $transaksi = Transaksi::where('id', $id)->firstOrFail();
+            
+            if ($transaksi->status === 'pending') {
+                // Kembalikan stok
+                if ($transaksi->produk) {
+                    $produk = $transaksi->produk;
+                    $oldStock = $produk->produk_stok;
+                    $produk->increment('produk_stok', 1);
+                    $produk->decrement('produk_terjual', 1);
+
+                    \App\Models\StockHistory::create([
+                        'product_id' => $produk->id,
+                        'change_amount' => 1,
+                        'previous_stock' => $oldStock,
+                        'current_stock' => $produk->produk_stok,
+                        'action' => 'Pembatalan Sales (Stok Kembali)',
+                    ]);
+                }
+
+                $transaksi->status = 'batal';
+                $transaksi->save();
+            }
+
+            \DB::commit();
+
+            // Kembalikan input form ke sesi old()
+            return redirect()->route('sales.transaksi')
+                ->withInput([
+                    'nama_pelanggan' => $transaksi->nama_pelanggan,
+                    'telepon_pelanggan' => $transaksi->telepon_pelanggan,
+                    'produk' => $transaksi->produk_id,
+                    'merchandise' => \App\Models\Merchandise::where('merch_nama', $transaksi->merchandise)->value('id'),
+                    'metode_pembayaran' => $transaksi->metode_pembayaran,
+                    'addon_perdana' => $transaksi->addon_perdana,
+                    'nomor_injeksi' => $transaksi->nomor_injeksi,
+                    'aktivasi_tanggal' => $transaksi->aktivasi_tanggal,
+                ])
+                ->with('warning', 'Pembayaran dibatalkan. Silakan ubah data.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return redirect()->route('sales.transaksi')->with('error', 'Gagal membatalkan transaksi: ' . $e->getMessage());
         }
     }
 
@@ -153,14 +320,14 @@ class TransaksiController extends Controller
     
         // Apply role-based filter
         if ($isKasir) {
-            $query->where('id_kasir', $request->user()->id);
+            $query->where('id_supervisor', $request->user()->id);
         } elseif ($request->filled('id_kasir') && $iskasir) {
-            $query->where('id_kasir', $request->id_kasir);
+            $query->where('id_supervisor', $request->id_kasir);
         }
     
         // === Apply filters if present ===
         if ($request->filled('id_kasir')) {
-            $query->where('id_kasir', $request->id_kasir);
+            $query->where('id_supervisor', $request->id_kasir);
         }
     
         if ($request->filled('metode_pembayaran')) {
@@ -199,9 +366,9 @@ class TransaksiController extends Controller
                 ->with(['produk' => fn($q) => $q->withTrashed()]);
         
             if ($isKasir) {
-                $sumQuery->where('id_kasir', $request->user()->id);
+                $sumQuery->where('id_supervisor', $request->user()->id);
             } elseif ($request->filled('id_kasir') && $iskasir) {
-                $sumQuery->where('id_kasir', $request->id_kasir);
+                $sumQuery->where('id_supervisor', $request->id_kasir);
             }
             
             if ($request->filled('tanggal_transaksi')) {
@@ -223,9 +390,9 @@ class TransaksiController extends Controller
             ->with(['produk' => fn($q) => $q->withTrashed()]);
         
         if ($isKasir) {
-            $othersQuery->where('id_kasir', $request->user()->id);
+            $othersQuery->where('id_supervisor', $request->user()->id);
         } elseif ($request->filled('id_kasir') && $iskasir) {
-            $othersQuery->where('id_kasir', $request->id_kasir);
+            $othersQuery->where('id_supervisor', $request->id_kasir);
         }
         
         if ($request->filled('tanggal_transaksi')) {
@@ -236,7 +403,7 @@ class TransaksiController extends Controller
             ->get()
             ->sum(fn($t) => optional($t->produk)->produk_harga_akhir ?? 0);
 
-        return view('supvis.RiwayatTransaksi', compact('transaksi', 'totalPenjualan', 'totalInsentif', 'paymentSums'));
+        return view('kasir.RiwayatTransaksi', compact('transaksi', 'totalPenjualan', 'totalInsentif', 'paymentSums'));
     }
 
     public function create()
@@ -247,7 +414,7 @@ class TransaksiController extends Controller
     public function kwitansi(Request $request, $action = 'stream')
     {
         $formData = $request->session()->get('form_data', []);
-        $pdf = Pdf::loadView('supvis.kwitansi', ['formData' => $formData])->setPaper('A6', 'portrait'); // Set A6 paper size in portrait orientation;
+        $pdf = Pdf::loadView('kasir.kwitansi', ['formData' => $formData])->setPaper('A6', 'portrait'); // Set A6 paper size in portrait orientation;
 
         // Simpan output PDF (ke memory)
         $pdfContent = $pdf->output();
@@ -318,6 +485,8 @@ class TransaksiController extends Controller
             'nomor_injeksi' => $transaksi->nomor_injeksi,
             'aktivasi_tanggal' => $transaksi->aktivasi_tanggal,
             'addon_perdana' => $transaksi->addon_perdana,
+            'kuota' => $selectedProduk->kuota,
+            'masa_aktif' => $selectedProduk->masa_aktif,
         ];
 
         if (request()->ajax()) {
@@ -327,13 +496,13 @@ class TransaksiController extends Controller
         if (request()->query('action') === 'print-html') {
             $formData['icon'] = asset('admin_asset/img/photos/icon_telkomsel.png');
             $formData['logo'] = asset('admin_asset/img/photos/logo_telkomsel.png');
-            $view = view('supvis.kwitansi', ['formData' => $formData])->render();
+            $view = view('kasir.kwitansi', ['formData' => $formData])->render();
             // Fix untuk Android: Jangan gunakan window.close() pada onafterprint karena akan membatalkan dialog print
             $view .= '<script>window.onload = function() { setTimeout(function() { window.print(); }, 500); }</script>';
             return response($view);
         }
 
-        $pdf = Pdf::loadView('supvis.kwitansi', ['formData' => $formData])->setPaper('A6', 'portrait'); // Set A6 paper size in portrait orientation;
+        $pdf = Pdf::loadView('kasir.kwitansi', ['formData' => $formData])->setPaper('A6', 'portrait'); // Set A6 paper size in portrait orientation;
 
         // Simpan output PDF (ke memory)
         $pdfContent = $pdf->output();
@@ -363,6 +532,7 @@ class TransaksiController extends Controller
                 ])
                 ->where('is_setor', false)
                 ->where('nama_sales', $nama_sales) // Filter langsung dari query
+                ->where('status', 'lunas')
                 ->orderBy('tanggal_transaksi', 'desc')
                 ->get();
 
@@ -386,9 +556,9 @@ class TransaksiController extends Controller
             // Cek apakah semua transaksi dalam satu tanggal adalah voided (terhapus)
             $allVoided = $groupedTransaksi->map(fn($items) => $items->every->trashed());
 
-            // Ambil transaksi yang sudah disetor untuk nama sales ini
             $setoranRaw = Transaksi::where('is_setor', true)
                 ->where('nama_sales', $nama_sales)
+                ->where('status', 'lunas')
                 ->with('produk')
                 ->orderBy('tanggal_transaksi', 'desc')
                 ->get();
@@ -433,7 +603,7 @@ class TransaksiController extends Controller
         return response()->json(['message' => 'Transaction status updated successfully']);
     }
 
-    public function supvisvoid(Request $request)
+    public function voidMonitor(Request $request)
     {
         $transaksi = Transaksi::onlyTrashed()
             ->with('produk')
@@ -465,11 +635,11 @@ class TransaksiController extends Controller
         $totalPenjualan = $totalsPerDate->sum('totalPenjualan');
         $totalInsentif = $totalsPerDate->sum('totalInsentif');
 
-        return view('admin.void.index', compact('groupedTransaksi', 'totalsPerDate', 'totalPenjualan', 'totalInsentif'));
+        return view('kasir.monitor.void', compact('groupedTransaksi', 'totalsPerDate', 'totalPenjualan', 'totalInsentif'));
 
     }
 
-    public function supvisdestroy($id)
+    public function destroyTransaction($id)
     {
         try {
             // Find the transaction
@@ -497,7 +667,7 @@ class TransaksiController extends Controller
         $merchandises->each(function ($merchandise) {
             $merchandise->produk_ids = $merchandise->produks->pluck('id')->toArray();
         });
-        return view('supvis.edittransaksi', compact(
+        return view('kasir.edittransaksi', compact(
             'transaksi',
             'produks',
             'merchandises'
@@ -593,7 +763,7 @@ class TransaksiController extends Controller
                 'telepon_pelanggan' => $request->telepon_pelanggan,
                 'addon_perdana' => $request->has('addon_perdana') ? 1 : 0,
             ]);
-            $kasir = RoleUsers::findOrFail($transaksi->id_kasir);
+            $kasir = RoleUsers::findOrFail($transaksi->id_supervisor);
             $transaksi->bertugas = $kasir->bertugas;
             $transaksi->tempat_tugas = $kasir->tempat_tugas;
             $transaksi->save();
@@ -616,20 +786,22 @@ class TransaksiController extends Controller
                     $query->withTrashed(); // Include trashed products
                 }
             ])
+            ->whereNull('id_pelanggan')
             ->get();
 
-        $totalPenjualan = 0;
-        // ini ambil based on id if ($item->id_kasir == $userId && $item->produk)
+        $totalPenjualan = Transaksi::where('id_supervisor', $userId)
+            ->where('is_paid', true)
+            ->with(['produk' => fn($q) => $q->withTrashed()])
+            ->get()
+            ->sum(fn($item) => $item->produk->produk_harga_akhir ?? 0);
+
         foreach ($transaksi as $item) {
-            if ($item->id_kasir == $userId && $item->produk) {
-                $totalPenjualan += $item->produk->produk_harga_akhir;
-            }
             $sales = \App\Models\RoleUsers::where('name', $item->nama_sales)->first();
             $item->sales_bertugas = $sales?->bertugas;
             $item->sales_tempat = $sales?->tempat_tugas;
         }
 
-        return view('supvis.approvetransaksi', compact('transaksi', 'totalPenjualan'));
+        return view('kasir.approvetransaksi', compact('transaksi', 'totalPenjualan'));
     }
 
     public function bayar(Request $request, $id)
@@ -669,6 +841,8 @@ class TransaksiController extends Controller
                 'metode_pembayaran' => $transaksi->metode_pembayaran,
                 'nomor_injeksi' => $request->nomor_injeksi,
                 'aktivasi_tanggal' => $transaksi->aktivasi_tanggal,
+                'kuota' => $selectedProduk->kuota,
+                'masa_aktif' => $selectedProduk->masa_aktif,
             ];
 
             $request->session()->put('form_data', $formData);
@@ -678,10 +852,10 @@ class TransaksiController extends Controller
                 'metode_pembayaran' => $request->metode_pembayaran,
                 'is_paid' => 1,
                 'nomor_injeksi' => $request->nomor_injeksi,
-                'id_kasir' => Auth::user()->id,
+                'id_supervisor' => Auth::user()->id,
             ]);
             
-            $pdf = Pdf::loadView('supvis.kwitansi', ['formData' => $formData])->setPaper('A6', 'portrait'); // Set A6 paper size in portrait orientation;
+            $pdf = Pdf::loadView('kasir.kwitansi', ['formData' => $formData])->setPaper('A6', 'portrait'); // Set A6 paper size in portrait orientation;
 
             // Simpan output PDF (ke memory)
             $pdfContent = $pdf->output();
@@ -691,7 +865,7 @@ class TransaksiController extends Controller
             $filePath = $storagePath . '/' . $formData['id_transaksi'] . '.pdf';
             file_put_contents($filePath, $pdfContent);
             
-            return redirect()->route('transaksi.approve')
+            return redirect()->route('kasir.transaksi.approve')
             ->with('success', 'Transaksi berhasil dibayar');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
@@ -704,7 +878,7 @@ class TransaksiController extends Controller
         $produks = Produk::all();
         $merchandises = Merchandise::all();
 
-        return view('supvis.bayartransaksi', compact('transaksi', 'produks', 'merchandises'));
+        return view('kasir.bayartransaksi', compact('transaksi', 'produks', 'merchandises'));
     }
 
     public function whatsapp($id)
@@ -733,8 +907,10 @@ class TransaksiController extends Controller
             'metode_pembayaran' => $transaksi->metode_pembayaran,
             'nomor_injeksi' => $transaksi->nomor_injeksi,
             'aktivasi_tanggal' => $transaksi->aktivasi_tanggal,
+            'kuota' => $selectedProduk->kuota,
+            'masa_aktif' => $selectedProduk->masa_aktif,
         ];
-        $pdf = Pdf::loadView('supvis.kwitansi', ['formData' => $formData])->setPaper('A6', 'portrait'); // Set A6 paper size in portrait orientation;
+        $pdf = Pdf::loadView('kasir.kwitansi', ['formData' => $formData])->setPaper('A6', 'portrait'); // Set A6 paper size in portrait orientation;
         // Simpan output PDF (ke memory)
         $pdfContent = $pdf->output();
 
@@ -772,10 +948,10 @@ class TransaksiController extends Controller
 
         $transaksi->update([
             'is_paid' => 0,
-            'id_kasir' => null,
+            'id_supervisor' => null,
         ]);
 
-        return redirect()->route('transaksi.approve');
+        return redirect()->route('kasir.transaksi.approve');
 
     }
     
@@ -812,13 +988,14 @@ class TransaksiController extends Controller
                 'kasir',
                 'sales',
             ])
-            ->orderBy('id_transaksi', 'asc')
+            ->whereNull('id_pelanggan')
+            ->orderBy('id', 'desc')
             ->get();
 
         if($request->ajax()){
             return response()->json(array('transaksi'=>$transaksi));
             }
-        return route('transaksi.approve', compact('transaksi'));        
+        return route('kasir.transaksi.approve', compact('transaksi'));        
     }
 
     public function setor(Request $request)
@@ -858,8 +1035,33 @@ class TransaksiController extends Controller
             });
         });
 
-        return view('admin.setoran.index', compact('groupedData'));
+        return view('kasir.monitor.setoran', compact('groupedData'));
     }
 
+    public function bulkApprove(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        
+        if (empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada transaksi yang dipilih.']);
+        }
+
+        try {
+            DB::beginTransaction();
+            
+            Transaksi::whereIn('id_transaksi', $ids)
+                ->where('is_paid', false)
+                ->update([
+                    'is_paid' => true,
+                    'id_supervisor' => auth()->user()->id,
+                ]);
+            
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Transaksi berhasil disetujui.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+        }
+    }
 }
 

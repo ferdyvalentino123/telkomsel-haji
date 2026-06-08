@@ -209,12 +209,12 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Nama Lengkap Pelanggan</label>
-                            <input type="text" name="nama_pelanggan" class="form-control" placeholder="Contoh: Budi Santoso" oninput="restrictNameInput(this)" required>
+                            <input type="text" name="nama_pelanggan" class="form-control" placeholder="Contoh: Budi Santoso" value="{{ old('nama_pelanggan') }}" oninput="restrictNameInput(this)" required>
                             <small id="error-message-name" class="text-danger" style="display: none;">Harap masukkan hanya huruf</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Nomor WhatsApp Pelanggan</label>
-                            <input type="number" name="telepon_pelanggan" class="form-control" placeholder="0812xxxx" maxlength="13" oninput="validateInjectionNumber(this)" required>
+                            <input type="number" name="telepon_pelanggan" class="form-control" placeholder="0812xxxx" maxlength="13" value="{{ old('telepon_pelanggan') }}" oninput="validateInjectionNumber(this)" required>
                         </div>
                     </div>
                 </div>
@@ -227,7 +227,7 @@
                     <div class="package-grid mb-4">
                         @foreach ($produks as $produk)
                             <label class="package-item">
-                                <input type="radio" name="produk" value="{{ $produk->id }}" onchange="filterMerchandises({{ $produk->id }})" required>
+                                <input type="radio" name="produk" value="{{ $produk->id }}" {{ old('produk') == $produk->id ? 'checked' : '' }} onchange="filterMerchandises({{ $produk->id }})" required>
                                 <div class="package-box">
                                     <span class="package-name">{{ $produk->produk_nama }}</span>
                                     <small class="text-muted d-block">{{ $produk->produk_detail }}</small>
@@ -243,7 +243,7 @@
                     <div class="package-grid" id="merchandise-container">
                         @foreach ($merchandises as $merchandise)
                             <label class="package-item radio-item" data-produk-ids="{{ json_encode($merchandise->produk_ids) }}">
-                                <input type="radio" name="merchandise" value="{{ $merchandise->id }}" disabled required>
+                                <input type="radio" name="merchandise" value="{{ $merchandise->id }}" {{ old('merchandise') == $merchandise->id ? 'checked' : '' }} disabled required>
                                 <div class="package-box d-flex align-items-center justify-content-center text-center p-3">
                                     <span class="fw-bold small">{{ $merchandise->merch_nama }}</span>
                                 </div>
@@ -259,7 +259,7 @@
                     </div>
                     <div class="package-grid">
                         <label class="package-item">
-                            <input type="radio" name="metode_pembayaran" value="Tunai" required>
+                            <input type="radio" name="metode_pembayaran" value="Tunai" {{ old('metode_pembayaran') == 'Tunai' ? 'checked' : '' }} required>
                             <div class="package-box d-flex align-items-center gap-3">
                                 <div class="payment-icon rounded-circle bg-success-subtle text-success">
                                     <i class="fas fa-money-bill-wave fa-lg"></i>
@@ -271,7 +271,7 @@
                             </div>
                         </label>
                         <label class="package-item">
-                            <input type="radio" name="metode_pembayaran" value="Nontunai" required>
+                            <input type="radio" name="metode_pembayaran" value="Nontunai" {{ old('metode_pembayaran') == 'Nontunai' ? 'checked' : '' }} required>
                             <div class="package-box d-flex align-items-center gap-3">
                                 <div class="payment-icon rounded-circle bg-primary-subtle text-primary">
                                     <i class="fas fa-qrcode fa-lg"></i>
@@ -292,9 +292,9 @@
                     </div>
                     <div class="row g-4 align-items-end">
                         <div class="col-md-12 mb-2">
-                            <label class="addon-pill">
-                                <input type="checkbox" name="addon_perdana" value="1" class="d-none">
-                                <i class="fas fa-plus-square text-muted"></i>
+                            <label class="addon-pill {{ old('addon_perdana') ? 'active text-primary border-primary' : '' }}">
+                                <input type="checkbox" name="addon_perdana" value="1" class="d-none" {{ old('addon_perdana') ? 'checked' : '' }}>
+                                <i class="fas fa-plus-square {{ old('addon_perdana') ? 'text-primary' : 'text-muted' }}"></i>
                                 <span>Tambah Nomor Perdana Baru</span>
                             </label>
                         </div>
@@ -350,7 +350,13 @@
     document.addEventListener("DOMContentLoaded", function() {
         const today = new Date().toISOString().split("T")[0]; // Ambil tanggal hari ini dalam format YYYY-MM-DD
         const dateInput = document.getElementById("aktivasi-tanggal");
-        dateInput.setAttribute("min", today); // Set batas minimal tanggal ke hari ini
+        if(dateInput) dateInput.setAttribute("min", today); // Set batas minimal tanggal ke hari ini
+
+        // Auto-trigger filterMerchandises if a product was previously selected (e.g. from old() values)
+        const selectedProduk = document.querySelector('input[name="produk"]:checked');
+        if (selectedProduk) {
+            filterMerchandises(selectedProduk.value);
+        }
     });
 
     function restrictNameInput(input) {
@@ -484,3 +490,4 @@
     }
 
 </script>
+

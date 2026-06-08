@@ -54,7 +54,7 @@ class BudgetInsentifController extends Controller
             'action' => $actionType,
         ]);
 
-        return redirect()->route('supvis.budget_insentif.index')->with('status', 'Budget Insentif berhasil diperbarui!');
+        return redirect()->route('kasir.budget_insentif.index')->with('status', 'Budget Insentif berhasil diperbarui!');
     }
 
     public function pantau()

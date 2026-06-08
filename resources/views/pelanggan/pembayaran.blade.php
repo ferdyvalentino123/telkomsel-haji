@@ -1,21 +1,9 @@
 <x-pelanggan.layouts>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --tsel-red: #bc0007;
-            --tsel-red-light: #ff2b2b;
-            --tsel-dark: #121212;
-            --tsel-glass: rgba(255, 255, 255, 0.95);
-            --tsel-shadow: rgba(188, 0, 7, 0.15);
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: #fcfcfc;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(188, 0, 7, 0.03) 0, transparent 50%), 
-                radial-gradient(at 100% 100%, rgba(188, 0, 7, 0.05) 0, transparent 50%);
-            min-height: 100vh;
+            --tsel-red-light: #e2241d;
+            --tsel-dark: #1a1c1c;
         }
 
         .payment-container {
@@ -63,12 +51,11 @@
         }
 
         .glass-card {
-            background: var(--tsel-glass);
-            backdrop-filter: blur(10px);
-            border-radius: 28px;
+            background: #fff;
+            border-radius: 16px;
             padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e2e2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
             margin-bottom: 25px;
             position: relative;
             overflow: hidden;
@@ -324,6 +311,14 @@
                     <span class="value"><span class="package-badge">{{ $transaksi->produk->produk_nama }}</span></span>
                 </div>
                 <div class="info-tile">
+                    <span class="label">Total Kuota</span>
+                    <span class="value">{{ $transaksi->produk->kuota ?? 'Utama' }}</span>
+                </div>
+                <div class="info-tile">
+                    <span class="label">Masa Aktif</span>
+                    <span class="value">{{ $transaksi->produk->masa_aktif ?? '30 Hari' }}</span>
+                </div>
+                <div class="info-tile">
                     <span class="label">Nomor Tujuan</span>
                     <span class="value">{{ $transaksi->telepon_pelanggan }}</span>
                 </div>
@@ -427,3 +422,4 @@
         });
     </script>
 </x-pelanggan.layouts>
+

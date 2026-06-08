@@ -91,30 +91,48 @@
           <thead>
             <tr>
               <th>No</th>
-              <th>ID Transaksi</th>
-              <th>Pelanggan</th>
-              <th>Nomor Telepon</th>
+              <th>ID Transaksi/Grup</th>
+              <th>Pelanggan / Travel</th>
+              <th>Info MSISDN</th>
               <th>Sales</th>
-              <th>Jumlah</th>
+              <th>Jenis Paket</th>
+              <th>Total Bayar</th>
               <th>Tanggal</th>
               <th>Status Bayar</th>
               <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
-            @forelse($transaksi ?? \App\Models\Transaksi::latest()->get() as $t)
+            @forelse($transaksi ?? [] as $t)
+              @php
+                  $isTravel = $t->supervisor && $t->supervisor->role === 'travel';
+                  $pelangganName = $isTravel ? $t->supervisor->name . ' <span class="badge bg-primary ms-1" style="font-size:0.6rem;">B2B Travel</span>' : ($t->nama_pelanggan ?: '-');
+                  $namaSales = $isTravel ? '-' : ($t->nama_sales ?: '-');
+                  $msisdnInfo = $isTravel 
+                      ? '<span class="badge bg-secondary"><i class="fas fa-users me-1"></i>' . ($t->total_msisdn ?? 1) . ' Nomor</span>'
+                      : '<span class="fw-semibold text-dark">' . ($t->telepon_pelanggan ?: ($t->pelanggan->phone ?? '-')) . '</span>';
+                  
+                  // Gunakan snap_token untuk search internal, tapi gunakan id_transaksi (dibersihkan ujungnya) untuk tampilan
+                  $searchToken = $t->snap_token ?: $t->id_transaksi;
+                  $displayId = $isTravel ? preg_replace('/-\d+$/', '', $t->id_transaksi) : $t->id_transaksi;
+                  $totalHarga = $t->akumulasi_harga ?? $t->total_harga ?? 0;
+              @endphp
               <tr>
                 <td><strong>{{ $loop->iteration }}</strong></td>
-                <td>#{{ $t->id_transaksi }}</td>
-                <td>{{ $t->nama_pelanggan }}</td>
+                <td><span class="fw-bold text-dark">#{{ $displayId }}</span></td>
+                <td>{!! $pelangganName !!}</td>
+                <td>{!! $msisdnInfo !!}</td>
+                <td><span>{{ $namaSales }}</span></td>
                 <td>
-                  <span class="fw-semibold text-dark">{{ $t->telepon_pelanggan ?: ($t->pelanggan->phone ?? '-') }}</span>
+                  @php
+                    $namaPaket = $t->produk ? $t->produk->produk_nama : ($t->jenis_paket ?: '-');
+                  @endphp
+                  <span class="text-dark" style="font-size:0.8rem; white-space:normal; max-width:160px; display:inline-block;">
+                    <i class="fas fa-sim-card text-danger me-1"></i>{{ $namaPaket }}
+                  </span>
                 </td>
                 <td>
-                  <span>{{ $t->nama_sales ?: '-' }}</span>
-                </td>
-                <td>
-                  <span class="badge bg-success">Rp {{ number_format($t->total_harga, 0, ",", ".") }}</span>
+                  <span class="badge bg-success">Rp {{ number_format($totalHarga, 0, ",", ".") }}</span>
                 </td>
                 <td>{{ $t->tanggal_transaksi ? \Carbon\Carbon::parse($t->tanggal_transaksi)->format("d M Y H:i") : "-" }}</td>
                 <td>
@@ -128,19 +146,31 @@
                 </td>
                 <td>
                   <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" onclick="viewTransaksiDetail('{{ $t->id_transaksi ?? $t->id }}', '{{ addslashes($t->nama_pelanggan ?? '') }}', 'Rp {{ number_format($t->total_harga, 0, ',', '.') }}', '{{ $t->tanggal_transaksi ? \Carbon\Carbon::parse($t->tanggal_transaksi)->format('d M Y H:i') : '' }}', '{{ ($t->is_paid || in_array($t->status, ['lunas', 'success'])) ? 'Dibayar' : 'Pending' }}', '{{ $t->telepon_pelanggan ?: ($t->pelanggan->phone ?? '-') }}', '{{ $t->nama_sales }}', '{{ addslashes($t->produk ? $t->produk->produk_nama : ($t->jenis_paket ?: '-')) }}', '{{ $t->nomor_injeksi ?: '-' }}')" class="btn btn-outline-info" title="Detail">
+                    <button type="button" onclick="viewTransaksiDetail('{{ $displayId }}', '{{ addslashes(strip_tags($pelangganName)) }}', 'Rp {{ number_format($totalHarga, 0, ',', '.') }}', '{{ $t->tanggal_transaksi ? \Carbon\Carbon::parse($t->tanggal_transaksi)->format('d M Y H:i') : '' }}', '{{ ($t->is_paid || in_array($t->status, ['lunas', 'success'])) ? 'Dibayar' : 'Pending' }}', '{{ strip_tags($msisdnInfo) }}', '{{ $namaSales }}', '{{ addslashes($t->produk ? $t->produk->produk_nama : ($t->jenis_paket ?: '-')) }}', '{{ $isTravel ? ($t->total_msisdn . " Nomor") : ($t->nomor_injeksi ?: "-") }}')" class="btn btn-outline-info" title="Detail">
                       <i class="fas fa-eye"></i>
                     </button>
                     
                     @if(($t->status == 'lunas' || $t->status == 'success' || $t->is_paid))
-                      @if(!$t->is_activated)
-                        <button type="button" onclick="prosesAktivasi('{{ route('admin.transaksi.aktivasi', $t->id) }}', '{{ $t->nama_pelanggan }}', '{{ $t->nomor_injeksi ?: $t->telepon_pelanggan }}')" class="btn btn-warning" title="Aktivasi Paket">
-                          <i class="fas fa-bolt"></i> Aktivasi
-                        </button>
+                      @if($isTravel)
+                        @if(!$t->is_activated)
+                          <a href="{{ route('admin.travel-aktivasi.index', ['search' => $searchToken]) }}" class="btn btn-warning" title="Perlu Injeksi Travel">
+                            <i class="fas fa-plane-arrival"></i> Injeksi Travel
+                          </a>
+                        @else
+                          <a href="{{ route('admin.travel-aktivasi.index', ['search' => $searchToken]) }}" class="btn btn-success" title="Sudah Aktif (Lihat Detail)">
+                            <i class="fas fa-check-double"></i> Travel Aktif
+                          </a>
+                        @endif
                       @else
-                        <button type="button" class="btn btn-success disabled" title="Sudah Aktif">
-                          <i class="fas fa-check-double"></i> Aktif
-                        </button>
+                        @if(!$t->is_activated)
+                          <button type="button" onclick="prosesAktivasi('{{ route('admin.transaksi.aktivasi', $t->id) }}', '{{ addslashes($t->nama_pelanggan ?? '') }}', '{{ $t->nomor_injeksi ?: $t->telepon_pelanggan }}')" class="btn btn-warning" title="Aktivasi Paket">
+                            <i class="fas fa-bolt"></i> Aktivasi
+                          </button>
+                        @else
+                          <button type="button" class="btn btn-success disabled" title="Sudah Aktif">
+                            <i class="fas fa-check-double"></i> Aktif
+                          </button>
+                        @endif
                       @endif
                     @endif
                   </div>
@@ -148,7 +178,7 @@
               </tr>
             @empty
               <tr>
-                <td colspan="8" class="text-center py-4">
+                <td colspan="9" class="text-center py-4">
                   <em class="text-muted"><i class="fas fa-inbox"></i> Tidak ada transaksi</em>
                 </td>
               </tr>
@@ -266,3 +296,4 @@ function prosesAktivasi(url, nama, nomor) {
 
 
 @endsection
+

@@ -14,7 +14,8 @@ class Produk extends Model
 
     protected $fillable = [
         'produk_nama', 'produk_harga', 'produk_diskon', 'produk_stok',
-        'produk_detail', 'produk_insentif', 'produk_terjual_history'
+        'produk_detail', 'kuota', 'masa_aktif', 'produk_insentif', 'produk_terjual_history',
+        'travel_id', // ID travel agent pemilik produk (nullable = semua travel)
     ];
 
 
@@ -22,6 +23,16 @@ class Produk extends Model
     {
         return $this->belongsToMany(Merchandise::class, 'merchandise_produk');
     }
+
+    /**
+     * Travel agent (RoleUsers) yang memiliki produk ini.
+     * Jika NULL, produk visible ke semua travel.
+     */
+    public function travel()
+    {
+        return $this->belongsTo(RoleUsers::class, 'travel_id');
+    }
+
     protected $casts = [
         'produk_terjual_history' => 'array',
     ];

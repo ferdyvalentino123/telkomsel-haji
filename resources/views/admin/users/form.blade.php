@@ -188,9 +188,9 @@
                             <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
                             <select name="role" class="form-select @error('role') is-invalid @enderror" required>
                                 <option value="">-- Pilih Akses --</option>
-                                <option value="supervisor" {{ old('role', $user->role ?? '') === 'supervisor' ? 'selected' : '' }}>Admin (Supervisor)</option>
+                                <option value="admin" {{ old('role', $user->role ?? '') === 'admin' ? 'selected' : '' }}>Admin</option>
                                 <option value="sales" {{ old('role', $user->role ?? '') === 'sales' ? 'selected' : '' }}>Sales</option>
-                                <option value="kasir" {{ old('role', $user->role ?? '') === 'kasir' ? 'selected' : '' }}>Kasir</option>
+                                <option value="supervisor" {{ old('role', $user->role ?? '') === 'supervisor' ? 'selected' : '' }}>Kasir</option>
                                 <option value="pelanggan" {{ old('role', $user->role ?? '') === 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
                                 <option value="travel" {{ old('role', $user->role ?? '') === 'travel' ? 'selected' : '' }}>Biro Travel</option>
                             </select>

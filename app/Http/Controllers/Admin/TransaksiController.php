@@ -33,16 +33,32 @@ class TransaksiController extends Controller
             });
         }
 
-        // Clone query for totals calculation before pagination
-        $totalTransaksi = (clone $query)->count();
+        // Clone query for subquery filtering
+        $subquery = clone $query;
+        $subquery->groupBy(DB::raw('COALESCE(snap_token, id_transaksi)'));
+        // Select MIN(id) to get a representative ID for each group
+        $representativeIds = $subquery->selectRaw('MIN(id) as id')->pluck('id');
+
+        // Main query for grouped data
+        $groupedQuery = Transaksi::whereIn('id', $representativeIds)
+            ->select('transaksis.*')
+            ->selectRaw('(SELECT COUNT(*) FROM transaksis t2 WHERE t2.deleted_at IS NULL AND COALESCE(t2.snap_token, t2.id_transaksi) = COALESCE(transaksis.snap_token, transaksis.id_transaksi)) as total_msisdn')
+            ->selectRaw('(SELECT SUM(t2.total_harga) FROM transaksis t2 WHERE t2.deleted_at IS NULL AND COALESCE(t2.snap_token, t2.id_transaksi) = COALESCE(transaksis.snap_token, transaksis.id_transaksi)) as akumulasi_harga')
+            ->with(['produk', 'supervisor', 'pelanggan'])
+            ->latest();
+
+        $totalTransaksi = $groupedQuery->count();
+        
+        // Pendapatan total dihitung dari base query (keseluruhan baris) karena akumulasi_harga adalah raw alias
         $totalPendapatan = (clone $query)->where(function($q) {
             $q->where('is_paid', 1)->orWhereIn('status', ['lunas', 'success']);
         })->sum('total_harga');
-        $totalDibayar = (clone $query)->where(function($q) {
+        
+        $totalDibayar = (clone $groupedQuery)->where(function($q) {
             $q->where('is_paid', 1)->orWhereIn('status', ['lunas', 'success']);
         })->count();
 
-        $transaksi = $query->get();
+        $transaksi = $groupedQuery->get();
 
         return view("admin.transaksi.index", compact("transaksi", "totalTransaksi", "totalPendapatan", "totalDibayar"));
     }
@@ -70,7 +86,18 @@ class TransaksiController extends Controller
             });
         }
 
-        $transaksis = $query->get();
+        $subquery = clone $query;
+        $subquery->groupBy(DB::raw('COALESCE(snap_token, id_transaksi)'));
+        $representativeIds = $subquery->selectRaw('MIN(id) as id')->pluck('id');
+
+        $groupedQuery = Transaksi::whereIn('id', $representativeIds)
+            ->select('transaksis.*')
+            ->selectRaw('(SELECT COUNT(*) FROM transaksis t2 WHERE t2.deleted_at IS NULL AND COALESCE(t2.snap_token, t2.id_transaksi) = COALESCE(transaksis.snap_token, transaksis.id_transaksi)) as total_msisdn')
+            ->selectRaw('(SELECT SUM(t2.total_harga) FROM transaksis t2 WHERE t2.deleted_at IS NULL AND COALESCE(t2.snap_token, t2.id_transaksi) = COALESCE(transaksis.snap_token, transaksis.id_transaksi)) as akumulasi_harga')
+            ->with(['produk', 'supervisor', 'pelanggan'])
+            ->latest();
+
+        $transaksis = $groupedQuery->get();
 
         $filename = 'rekap-transaksi';
         if ($request->filled('date')) {
@@ -94,18 +121,19 @@ class TransaksiController extends Controller
 
             fputcsv($handle, [
                 'No', 
-                'ID Transaksi', 
-                'Nama Pelanggan', 
-                'Nomor Telepon', 
+                'ID Transaksi/Grup', 
+                'Pelanggan / Travel', 
+                'Info MSISDN', 
                 'Nama Produk', 
+                'Jumlah Beli (Pax)',
                 'Total Bayar (Rp)', 
                 'Tanggal Transaksi', 
                 'Status Pembayaran', 
-                'Metode Pembayaran'
+                'Metode Pembayaran',
+                'Nama Sales'
             ]);
 
             foreach ($transaksis as $i => $t) {
-                // Status mapping yang lebih rapi
                 if ($t->status === 'lunas' || $t->status === 'success' || $t->is_paid) {
                     $status = 'LUNAS';
                 } elseif ($t->status === 'pending' || !$t->status) {
@@ -116,19 +144,28 @@ class TransaksiController extends Controller
                     $status = strtoupper($t->status);
                 }
 
-                // Ambil nomor telepon dari transaksi atau profil
-                $nomorTelepon = $t->telepon_pelanggan ?: ($t->pelanggan->phone ?? '-');
+                $isTravel = $t->supervisor && $t->supervisor->role === 'travel';
+                $pelangganName = $isTravel ? ($t->supervisor->name . ' (B2B Travel)') : ($t->nama_pelanggan ?? '-');
+                $namaSales = $isTravel ? '-' : ($t->nama_sales ?? '-');
+                
+                $msisdnInfo = $isTravel 
+                    ? ($t->total_msisdn . ' Nomor MSISDN (Kolektif)')
+                    : ($t->telepon_pelanggan ?: ($t->pelanggan->phone ?? '-'));
+                
+                $idGroup = $t->snap_token ?: $t->id_transaksi;
 
                 fputcsv($handle, [
                     $i + 1,
-                    $t->id_transaksi ?? $t->id,
-                    $t->nama_pelanggan ?? '-',
-                    $nomorTelepon,
+                    $idGroup,
+                    $pelangganName,
+                    $msisdnInfo,
                     $t->produk?->produk_nama ?? '-',
-                    $t->total_harga ?? 0, // Raw number lebih baik untuk perhitungan di Excel
+                    $t->total_msisdn ?? 1,
+                    $t->akumulasi_harga ?? $t->total_harga ?? 0,
                     $t->tanggal_transaksi ? Carbon::parse($t->tanggal_transaksi)->format('d/m/Y H:i') : '-',
                     $status,
                     strtoupper($t->metode_pembayaran ?? '-'),
+                    $namaSales
                 ]);
             }
             fclose($handle);
@@ -212,6 +249,103 @@ class TransaksiController extends Controller
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Monitor transaksi yang di-void (soft deleted) - tampilan Admin.
+     */
+    public function monitorVoid(Request $request)
+    {
+        $transaksi = Transaksi::onlyTrashed()
+            ->with(['produk' => fn($q) => $q->withTrashed()])
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->get();
+
+        $groupedTransaksi = $transaksi->groupBy(function ($item) {
+            return Carbon::parse($item->tanggal_transaksi)->format('Y-m-d');
+        });
+
+        $totalsPerDate = $groupedTransaksi->map(function ($items) {
+            return [
+                'totalPenjualan' => $items->sum(fn($i) => $i->produk ? $i->produk->produk_harga_akhir : 0),
+                'totalInsentif'  => $items->sum(fn($i) => $i->produk ? $i->produk->produk_insentif : 0),
+            ];
+        });
+
+        $totalPenjualan = $totalsPerDate->sum('totalPenjualan');
+        $totalInsentif  = $totalsPerDate->sum('totalInsentif');
+
+        return view('admin.monitor.void', compact('groupedTransaksi', 'totalsPerDate', 'totalPenjualan', 'totalInsentif'));
+    }
+
+    /**
+     * Monitor setoran harian sales - tampilan Admin.
+     */
+    public function monitorSetoran(Request $request)
+    {
+        $transaksi = Transaksi::with(['produk', 'sales'])
+            ->whereHas('sales', fn($q) => $q->where('role', 'sales'))
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->get();
+
+        $groupedData = $transaksi->groupBy(function ($item) {
+            return Carbon::parse($item->tanggal_transaksi)->format('Y-m-d');
+        })->map(function ($dateItems) {
+            return $dateItems->groupBy('nama_sales')->map(function ($salesItems) {
+                return [
+                    'total_sales'    => $salesItems->sum(fn($i) => $i->produk ? $i->produk->produk_harga_akhir : 0),
+                    'total_insentif' => $salesItems->sum(fn($i) => $i->produk ? $i->produk->produk_insentif : 0),
+                    'total_setor'    => $salesItems->where('is_setor', true)->sum(fn($i) => $i->produk ? $i->produk->produk_harga_akhir : 0),
+                    'total_pending'  => $salesItems->where('is_setor', false)->sum(fn($i) => $i->produk ? $i->produk->produk_harga_akhir : 0),
+                    'total_verified' => $salesItems->where('is_verified_setor', true)->sum(fn($i) => $i->produk ? $i->produk->produk_harga_akhir : 0),
+                    'count'          => $salesItems->count(),
+                    'is_all_setor'   => $salesItems->every('is_setor', true),
+                    'is_all_verified'=> $salesItems->where('is_setor', true)->every('is_verified_setor', true) && $salesItems->where('is_setor', true)->count() > 0,
+                ];
+            });
+        });
+
+        return view('admin.monitor.setoran', compact('groupedData'));
+    }
+
+    /**
+     * Approve setoran sales oleh admin.
+     */
+    public function approveSetoran(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date',
+            'sales_name' => 'required|string'
+        ]);
+
+        try {
+            $updated = Transaksi::whereDate('tanggal_transaksi', $request->date)
+                ->where('nama_sales', $request->sales_name)
+                ->where('is_setor', true)
+                ->update(['is_verified_setor' => true]);
+
+            if ($updated > 0) {
+                return redirect()->back()->with('success', "Berhasil menyetujui setoran dari {$request->sales_name} untuk tanggal " . Carbon::parse($request->date)->format('d F Y'));
+            } else {
+                return redirect()->back()->with('info', "Tidak ada setoran yang perlu disetujui dari {$request->sales_name} pada tanggal tersebut.");
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menyetujui setoran: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Hapus permanen transaksi yang di-void.
+     */
+    public function destroyVoid($id)
+    {
+        try {
+            $transaksi = Transaksi::withTrashed()->findOrFail($id);
+            $transaksi->forceDelete();
+            return redirect()->back()->with('success', 'Transaksi berhasil dihapus permanen.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
         }
     }
 }
