@@ -17,3 +17,10 @@ yarn-error.log
 /.idea
 /.vscode
 .env
+
+# File sensitif — jangan di-push ke repository
+update-keys.bat
+update-midtrans-keys.ps1
+
+# Database dump — simpan di lokal saja
+*.sql
