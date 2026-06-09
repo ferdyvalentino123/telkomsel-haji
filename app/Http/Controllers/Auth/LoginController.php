@@ -54,7 +54,7 @@ class LoginController extends Controller
                     return redirect()->route('admin.home');
                 case 'supervisor':
                     Auth::login($user);
-                    return redirect()->route('kasir.home');
+                    return redirect()->route('admin.home');
                 case 'sales':
                     Auth::login($user);
                     return redirect()->route('sales.home');

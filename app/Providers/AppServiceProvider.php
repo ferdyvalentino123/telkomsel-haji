@@ -22,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        if (env('APP_ENV') !== 'local') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         Gate::before(function ($user, $ability) {
             return $user->hasRole('kasir') ? true : null;
         });
