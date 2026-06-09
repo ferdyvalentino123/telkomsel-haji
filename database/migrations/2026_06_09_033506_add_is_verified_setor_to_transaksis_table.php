@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('transaksis', function (Blueprint $table) {
-            $table->boolean('is_verified_setor')->default(false)->after('is_setor');
+            if (!Schema::hasColumn('transaksis', 'is_verified_setor')) {
+                $table->boolean('is_verified_setor')->default(false);
+            }
         });
     }
 

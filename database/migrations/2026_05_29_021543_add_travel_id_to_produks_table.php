@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('produks', function (Blueprint $table) {
-            // Nullable so existing products without a travel owner still work
-            $table->unsignedBigInteger('travel_id')->nullable()->after('id')
-                  ->comment('ID of the travel agent (role_users) who owns this product. NULL = available to all.');
+            if (!Schema::hasColumn('produks', 'travel_id')) {
+                $table->unsignedBigInteger('travel_id')->nullable()->comment('ID of the travel agent (role_users) who owns this product. NULL = available to all.');
+            }
 
             // Add index for faster filtering
             $table->index('travel_id', 'produks_travel_id_index');
