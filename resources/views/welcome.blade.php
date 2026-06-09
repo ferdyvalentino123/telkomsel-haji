@@ -283,7 +283,7 @@
 
     <section class="main-content">
         <div class="image-header">
-            <img src="{{ asset('admin_asset/img/photos/layer 1.png') }}" alt="Layer 1">
+            <img src="{{ asset('admin_asset/img/photos/Layer 1.png') }}" alt="Layer 1">
         </div>
         <h1>Sistem Telkomsel RoaMAX Haji</h1>
         <p>Selamat datang di pusat layanan terpadu <br> <strong style="color: #ec1c24;">Program Haji
