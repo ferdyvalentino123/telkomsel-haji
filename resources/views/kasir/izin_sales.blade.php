@@ -1,4 +1,4 @@
-<x-Kasir.KasirLayouts><main class="content"><div class="container-fluid p-0">
+<x-kasir.layouts><main class="content"><div class="container-fluid p-0">
     
     
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
@@ -469,6 +469,6 @@ background-color : #23a0b0;
             
         </div>
     </main>
-</x-Kasir.KasirLayouts>
+</x-kasir.layouts>
 
 

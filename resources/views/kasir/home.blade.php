@@ -1,4 +1,4 @@
-<x-Kasir.KasirLayouts><main class="content"><div class="container-fluid p-0">
+<x-kasir.layouts><main class="content"><div class="container-fluid p-0">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
@@ -261,6 +261,6 @@
             </div>
         </div>
     </div>
-</div></main></x-Kasir.KasirLayouts>
+</div></main></x-kasir.layouts>
 
 

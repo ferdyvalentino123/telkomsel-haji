@@ -1,4 +1,4 @@
-<x-Kasir.KasirLayouts><main class="content"><div class="container-fluid p-0">
+<x-kasir.layouts><main class="content"><div class="container-fluid p-0">
     <style>
         .profile-section {
             text-align: center;
@@ -216,6 +216,6 @@
             });
         });
     </script>
-</div></main></x-Kasir.KasirLayouts>
+</div></main></x-kasir.layouts>
 
 

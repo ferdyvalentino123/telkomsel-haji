@@ -1,4 +1,4 @@
-<x-Kasir.KasirLayouts>
+<x-kasir.layouts>
     <main class="content">
         <div class="container-fluid p-0">
     <div class="container mt-4">
@@ -296,7 +296,7 @@
 @endpush
         </div>
     </main>
-</x-Kasir.KasirLayouts>
+</x-kasir.layouts>
 
 
 @stack('scripts')

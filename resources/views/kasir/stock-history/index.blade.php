@@ -1,4 +1,4 @@
-<x-Kasir.KasirLayouts><main class="content"><div class="container-fluid p-0">
+<x-kasir.layouts><main class="content"><div class="container-fluid p-0">
     <div class="container-fluid p-4">
         <div class="row mb-4">
             <div class="col-12">
@@ -43,6 +43,6 @@
             </table>
         </div>
     </div>
-</div></main></x-Kasir.KasirLayouts>
+</div></main></x-kasir.layouts>
 
 

@@ -1,4 +1,4 @@
-<x-Sales.SalesLayouts>
+<x-sales.layouts>
     <style>
         :root {
             --tsel-red: #bc0007;
@@ -434,4 +434,4 @@
         //     payButton.click();
         // });
     </script>
-</x-Sales.SalesLayouts>
+</x-sales.layouts>

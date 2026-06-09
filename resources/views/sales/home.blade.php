@@ -1,4 +1,4 @@
-<x-Sales.SalesLayouts>
+<x-sales.layouts>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @if (session('alert'))
         <script>
@@ -262,5 +262,5 @@
             </div>
         </div>
 
-</x-Sales.SalesLayouts>
+</x-sales.layouts>
 

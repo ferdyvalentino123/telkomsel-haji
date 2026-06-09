@@ -1,4 +1,4 @@
-<x-Sales.SalesLayouts>
+<x-sales.layouts>
 <style>
     .page-header {
         background: linear-gradient(135deg, #bc0007 0%, #e2241d 100%);
@@ -355,4 +355,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-</x-Sales.SalesLayouts>
+</x-sales.layouts>

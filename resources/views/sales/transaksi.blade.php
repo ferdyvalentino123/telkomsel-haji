@@ -1,4 +1,4 @@
-<x-Sales.SalesLayouts>
+<x-sales.layouts>
 
     <head>
         <style>
@@ -344,7 +344,7 @@
         @endif
 
     </body>    
-</x-Sales.SalesLayouts>
+</x-sales.layouts>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

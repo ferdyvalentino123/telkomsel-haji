@@ -1,4 +1,4 @@
-<x-Kasir.KasirLayouts>
+<x-kasir.layouts>
     <main class="content">
         <div class="container-fluid p-0">
 
@@ -418,6 +418,6 @@
         </script>
         </div>
     </main>
-</x-Kasir.KasirLayouts>
+</x-kasir.layouts>
 
 

@@ -1,4 +1,4 @@
-<x-Kasir.KasirLayouts><main class="content"><div class="container-fluid p-0">
+<x-kasir.layouts><main class="content"><div class="container-fluid p-0">
 
     <head>
         <style>
@@ -341,7 +341,7 @@
                 <a href="{{ url()->previous() }}" class="btn btn-secondary">Batal</a>
             </form>
         </div>
-</div></main></x-Kasir.KasirLayouts>
+</div></main></x-kasir.layouts>
 
 <script>
     function validateInjectionNumber(input) {

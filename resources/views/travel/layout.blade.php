@@ -58,7 +58,7 @@
 <body>
     <div class="wrapper">
 
-        <x-travel.TravelLeftDrawer></x-travel.TravelLeftDrawer>
+        <x-travel.sidebar></x-travel.sidebar>
 
         <div class="main">
             <x-top-drawer></x-top-drawer>

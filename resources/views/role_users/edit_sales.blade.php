@@ -1,4 +1,4 @@
-<x-Sales.SalesLayouts>
+<x-sales.layouts>
     @include('role_users.form_content')
-</x-Sales.SalesLayouts>
+</x-sales.layouts>
 

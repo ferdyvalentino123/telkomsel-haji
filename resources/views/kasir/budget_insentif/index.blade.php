@@ -1,5 +1,5 @@
 
-<x-Kasir.KasirLayouts><main class="content"><div class="container-fluid p-0">
+<x-kasir.layouts><main class="content"><div class="container-fluid p-0">
     <div class="container mt-4">
         <h2 class="text-center mb-4">Budget Insentif</h2>
         @if (session('status'))
@@ -56,6 +56,6 @@
             opacity: 0.9;
         }
     </style>
-</div></main></x-Kasir.KasirLayouts>
+</div></main></x-kasir.layouts>
 
 

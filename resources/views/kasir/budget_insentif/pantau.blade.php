@@ -1,5 +1,5 @@
 
-<x-Kasir.KasirLayouts><main class="content"><div class="container-fluid p-0">
+<x-kasir.layouts><main class="content"><div class="container-fluid p-0">
 <link href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
     <div class="container">
         <h2 class="text-center mt-5 mb-5"><b>Riwayat Perubahan Budget</b></h2>
@@ -91,6 +91,6 @@
             });
         });
     </script>
-</div></main></x-Kasir.KasirLayouts>
+</div></main></x-kasir.layouts>
 
 

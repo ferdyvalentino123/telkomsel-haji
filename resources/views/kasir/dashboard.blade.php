@@ -1,4 +1,4 @@
-<x-Kasir.KasirLayouts>
+<x-kasir.layouts>
 <main class="content">
 <div class="container-fluid p-0">
 
@@ -644,7 +644,7 @@
     </div>
 </div>
 </main>
-</x-Kasir.KasirLayouts>
+</x-kasir.layouts>
 
 <script>
     function updateClock() {
