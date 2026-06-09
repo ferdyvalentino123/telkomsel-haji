@@ -8,7 +8,7 @@
     <div class="dropdown">
         <a href="#" class="nav-user dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             @if(Auth::user()->photo)
-                <img src="{{ asset('?' . Auth::user()->photo) }}" alt="Profile" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                <img src="{{ filter_var(Auth::user()->photo, FILTER_VALIDATE_URL) ? Auth::user()->photo : asset('storage/' . Auth::user()->photo) }}" alt="Profile" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
             @else
                 <i class="fas fa-user-circle fa-lg text-secondary"></i> 
             @endif

@@ -248,7 +248,7 @@
         <nav class="navbar navbar-expand-lg navbar-light fixed-top">
             <div class="container-fluid px-4">
                 <a class="navbar-brand" href="{{ url('/programhaji/login') }}">
-                    <img src="admin_asset/img/photos/logo_telkomsel.png" alt="Telkomsel Logo" />
+                    <img src="{{ asset('admin_asset/img/photos/logo_telkomsel.png') }}" alt="Telkomsel Logo" />
                     <span style="font-weight: 700; color: #ec1c24; margin-left: 10px;">PONDOK HAJI</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
