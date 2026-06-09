@@ -25,7 +25,7 @@ RUN docker-php-ext-configure gd \
     --with-jpeg \
     --with-webp
 
-# Install PHP extensions
+# Install PHP extensions (tokenizer, ctype, fileinfo, pcntl already built-in)
 RUN docker-php-ext-install \
     pdo \
     pdo_mysql \
@@ -35,13 +35,7 @@ RUN docker-php-ext-install \
     zip \
     intl \
     gd \
-    tokenizer \
-    ctype \
-    fileinfo \
-    pcntl
-
-# Install opcache separately (Zend extension)
-RUN docker-php-ext-install opcache
+    opcache
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
