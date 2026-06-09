@@ -56,7 +56,7 @@
 <body>
 	<div class="wrapper">
         
-		<x-Sales.SalesLeftDrawer></x-Sales.SalesLeftDrawer>
+		<x-sales.left-drawer></x-sales.left-drawer>
 
 		<div class="main">
             <x-top-drawer></x-top-drawer>
