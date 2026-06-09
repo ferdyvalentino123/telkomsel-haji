@@ -1,4 +1,4 @@
-<x-Supvis.SupvisLayouts>
+<x-supvis.layouts>
 
 <link href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
     
@@ -137,4 +137,4 @@
         });
     });
 </script>
-</x-Supvis.SupvisLayouts>
+</x-supvis.layouts>

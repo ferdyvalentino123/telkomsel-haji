@@ -1,4 +1,4 @@
-<x-Supvis.SupvisLayouts>
+<x-supvis.layouts>
     <div class="container">
         <h2 class="mb-4">Edit Tugas Role User</h2>
 
@@ -22,5 +22,5 @@
             <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
         </form>
     </div>
-</x-Supvis.SupvisLayouts>
+</x-supvis.layouts>
 

@@ -1,4 +1,4 @@
-<x-Supvis.SupvisLayouts>
+<x-supvis.layouts>
     <div class="container">
         <h2 class="mb-4">Kelola Bertugas - Role Sales</h2>
 
@@ -137,5 +137,5 @@
             });
         });
     </script>
-</x-Supvis.SupvisLayouts>
+</x-supvis.layouts>
 

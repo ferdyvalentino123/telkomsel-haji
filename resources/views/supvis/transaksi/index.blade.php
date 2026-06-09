@@ -1,4 +1,4 @@
-<x-supvis.SupvisLayouts>
+<x-supvis.layouts>
     <div class="container-fluid p-4">
         <div class="row mb-4">
             <div class="col-12">
@@ -42,5 +42,5 @@
             </table>
         </div>
     </div>
-</x-supvis.SupvisLayouts>
+</x-supvis.layouts>
 

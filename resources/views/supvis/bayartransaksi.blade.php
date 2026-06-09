@@ -1,4 +1,4 @@
-<x-Supvis.SupvisLayouts>
+<x-supvis.layouts>
 
     <head>
         <style>
@@ -341,7 +341,7 @@
                 <a href="{{ url()->previous() }}" class="btn btn-secondary">Batal</a>
             </form>
         </div>
-</x-Supvis.SupvisLayouts>
+</x-supvis.layouts>
 
 <script>
     function validateInjectionNumber(input) {
