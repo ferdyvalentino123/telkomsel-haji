@@ -42,12 +42,21 @@ require __DIR__ . '/pelanggan.php';
 require __DIR__ . '/travel.php';
 
 // Add this to routes/web.php temporarily
-Route::get('/check-admin', function () {
-    $admin = \App\Models\RoleUsers::where('email', 'admin@test.com')->first();
+Route::get('/create-admin', function () {
+    $admin = \App\Models\RoleUsers::firstOrCreate(
+        ['email' => 'admin@haji.com'],
+        [
+            'name' => 'Administrator',
+            'pin' => '123456',
+            'role' => 'admin',
+            'phone' => '08111111111',
+            'is_superuser' => true,
+        ]
+    );
     
-    if (!$admin) {
-        return "User not found";
-    }
-    
-    return "Email: {$admin->email}<br>Role: {$admin->role}<br>ID: {$admin->id}";
+    return "<h3>Akun Admin Berhasil Dibuat/Ditemukan!</h3>" .
+           "<p>Email: <b>{$admin->email}</b></p>" .
+           "<p>PIN: <b>123456</b></p>" .
+           "<p>Role: <b>{$admin->role}</b></p>" .
+           "<br><a href='/programhaji/login'>Kembali ke Login</a>";
 });
