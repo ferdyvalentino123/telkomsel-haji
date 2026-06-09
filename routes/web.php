@@ -60,3 +60,14 @@ Route::get('/create-admin', function () {
            "<p>Role: <b>{$admin->role}</b></p>" .
            "<br><a href='/programhaji/login'>Kembali ke Login</a>";
 });
+
+// Debug route to check users
+Route::get('/check-db', function () {
+    $users = \App\Models\RoleUsers::all();
+    $html = "<h3>Daftar User di Database (" . count($users) . " user)</h3><ul>";
+    foreach ($users as $u) {
+        $html .= "<li>{$u->email} (Role: {$u->role}) - Created: {$u->created_at}</li>";
+    }
+    $html .= "</ul>";
+    return $html;
+});
