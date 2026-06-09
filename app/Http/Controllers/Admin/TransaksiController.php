@@ -35,6 +35,8 @@ class TransaksiController extends Controller
 
         // Clone query for subquery filtering
         $subquery = clone $query;
+        // Remove orders to prevent strict mode group by errors
+        $subquery->getQuery()->orders = null;
         $subquery->groupBy(DB::raw('COALESCE(snap_token, id_transaksi)'));
         // Select MIN(id) to get a representative ID for each group
         $representativeIds = $subquery->selectRaw('MIN(id) as id')->pluck('id');
@@ -87,6 +89,7 @@ class TransaksiController extends Controller
         }
 
         $subquery = clone $query;
+        $subquery->getQuery()->orders = null; // Remove orders for strict mode
         $subquery->groupBy(DB::raw('COALESCE(snap_token, id_transaksi)'));
         $representativeIds = $subquery->selectRaw('MIN(id) as id')->pluck('id');
 
