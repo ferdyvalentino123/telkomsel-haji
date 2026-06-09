@@ -58,8 +58,8 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose port (Railway sets $PORT dynamically)
 EXPOSE 8080
 
-# Start command
-CMD php artisan migrate --force \
+# Start command (TEMPORARY: using migrate:fresh to clean corrupted DB)
+CMD php artisan migrate:fresh --force \
     && php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache \
