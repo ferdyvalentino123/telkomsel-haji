@@ -22,7 +22,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        if (env('APP_ENV') !== 'local') {
+        // Force HTTPS if running behind a proxy (like Railway)
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        } elseif (env('APP_ENV') === 'production') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
