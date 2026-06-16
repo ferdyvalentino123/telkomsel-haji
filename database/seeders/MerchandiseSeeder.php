@@ -21,7 +21,7 @@ class MerchandiseSeeder extends Seeder
     'merch_detail' => 'Payung Fantasi',
     'merch_stok' => 100,
     'created_at' => NULL,
-    'updated_at' => '2026-06-16T17:09:20.000000Z',
+    'updated_at' => '2026-06-16 17:09:20',
     'stok_terakhir' => 0,
     'merch_terambil' => 0,
     'merch_terambil_history' => NULL,

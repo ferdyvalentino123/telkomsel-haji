@@ -41,6 +41,9 @@ class ExportSeeders extends Command
         $arrayString = preg_replace('/\),/m', '],', $arrayString);
         $arrayString = preg_replace('/\)$/m', ']', $arrayString);
         $arrayString = preg_replace('/=> \n\s+\[/', '=> [', $arrayString);
+        
+        // Convert ISO 8601 datetime to MySQL datetime (e.g. 2026-06-16T17:09:20.000000Z -> 2026-06-16 17:09:20)
+        $arrayString = preg_replace('/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})\.\d+Z/', '$1 $2', $arrayString);
 
         $stub = "<?php\n\nnamespace Database\Seeders;\n\nuse Illuminate\Database\Seeder;\nuse Illuminate\Support\Facades\DB;\n\nclass {$className} extends Seeder\n{\n    public function run(): void\n    {\n        DB::statement('SET FOREIGN_KEY_CHECKS=0');\n        DB::table('{$tableName}')->truncate();\n        DB::statement('SET FOREIGN_KEY_CHECKS=1');\n\n        DB::table('{$tableName}')->insert({$arrayString});\n    }\n}\n";
 
