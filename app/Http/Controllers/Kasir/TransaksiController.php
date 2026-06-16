@@ -462,20 +462,20 @@ class TransaksiController extends Controller
     {
         $transaksi = Transaksi::withTrashed()->findOrFail($id);
 
-        $selectedProduk = Produk::withTrashed()->findOrFail($transaksi->jenis_paket);
+        $selectedProduk = Produk::withTrashed()->find($transaksi->jenis_paket);
         $selectedMerchandise = Merchandise::withTrashed()
             ->where('merch_nama', $transaksi->merchandise)
-            ->firstOrFail();
+            ->first();
 
         // Simpan ke session form_data
         $formData = [
             'icon' => request()->ajax() ? asset('admin_asset/img/photos/icon_telkomsel.png') : public_path('admin_asset/img/photos/icon_telkomsel.png'),
             'logo' => request()->ajax() ? asset('admin_asset/img/photos/logo_telkomsel.png') : public_path('admin_asset/img/photos/logo_telkomsel.png'),
             'id_transaksi' => $transaksi->id_transaksi,
-            'produk_nama' => $selectedProduk->produk_nama,
-            'produk_harga' => $selectedProduk->produk_harga,
-            'produk_harga_akhir' => $selectedProduk->produk_harga_akhir,
-            'merch_nama' => $selectedMerchandise->merch_nama,
+            'produk_nama' => $selectedProduk ? $selectedProduk->produk_nama : $transaksi->jenis_paket,
+            'produk_harga' => $selectedProduk ? $selectedProduk->produk_harga : 0,
+            'produk_harga_akhir' => $selectedProduk ? $selectedProduk->produk_harga_akhir : $transaksi->total_harga,
+            'merch_nama' => $selectedMerchandise ? $selectedMerchandise->merch_nama : ($transaksi->merchandise ?? '-'),
             'nama_pelanggan' => $transaksi->nama_pelanggan,
             'nama_sales' => $transaksi->nama_sales,
             'tanggal_transaksi' => $transaksi->tanggal_transaksi,
@@ -485,8 +485,8 @@ class TransaksiController extends Controller
             'nomor_injeksi' => $transaksi->nomor_injeksi,
             'aktivasi_tanggal' => $transaksi->aktivasi_tanggal,
             'addon_perdana' => $transaksi->addon_perdana,
-            'kuota' => $selectedProduk->kuota,
-            'masa_aktif' => $selectedProduk->masa_aktif,
+            'kuota' => $selectedProduk ? $selectedProduk->kuota : '-',
+            'masa_aktif' => $selectedProduk ? $selectedProduk->masa_aktif : '-',
         ];
 
         if (request()->ajax()) {
