@@ -38,8 +38,8 @@ class ExportSeeders extends Command
         
         // Convert array syntax from array() to []
         $arrayString = preg_replace('/array \(/', '[', $arrayString);
+        $arrayString = preg_replace('/\),/m', '],', $arrayString);
         $arrayString = preg_replace('/\)$/m', ']', $arrayString);
-        $arrayString = preg_replace('/^\s+\]/m', '        ]', $arrayString);
         $arrayString = preg_replace('/=> \n\s+\[/', '=> [', $arrayString);
 
         $stub = "<?php\n\nnamespace Database\Seeders;\n\nuse Illuminate\Database\Seeder;\nuse Illuminate\Support\Facades\DB;\n\nclass {$className} extends Seeder\n{\n    public function run(): void\n    {\n        DB::statement('SET FOREIGN_KEY_CHECKS=0');\n        DB::table('{$tableName}')->truncate();\n        DB::statement('SET FOREIGN_KEY_CHECKS=1');\n\n        DB::table('{$tableName}')->insert({$arrayString});\n    }\n}\n";
