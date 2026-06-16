@@ -102,7 +102,11 @@ class ProdukController extends Controller
 
     public function destroy(Produk $produk)
     {
-        $produk->delete();
-        return response()->json(["success" => true]);
+        try {
+            $produk->delete();
+            return response()->json(["success" => true]);
+        } catch (\Exception $e) {
+            return response()->json(["success" => false, "message" => $e->getMessage()]);
+        }
     }
 }

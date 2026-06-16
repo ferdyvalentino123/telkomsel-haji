@@ -116,7 +116,9 @@ function deleteProduk(id) {
       }
     }).then(r => r.json()).then(d => {
       if (d.success) location.reload();
-      else alert("Gagal menghapus");
+      else alert("Gagal menghapus: " + (d.message || "Kesalahan tidak diketahui"));
+    }).catch(e => {
+      alert("Gagal menghapus: " + e.message);
     });
   }
 }
