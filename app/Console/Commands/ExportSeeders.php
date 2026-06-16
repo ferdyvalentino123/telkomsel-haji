@@ -21,6 +21,7 @@ class ExportSeeders extends Command
         $produks = \App\Models\Produk::withTrashed()->get()->map(function ($item) {
             $arr = $item->toArray();
             unset($arr['produk_terjual_history']); // Assuming we don't seed this
+            unset($arr['produk_harga_akhir']); // Virtual/generated column - cannot be inserted
             return $arr;
         })->toArray();
         $this->generateSeeder('ProdukSeeder', 'produks', $produks);
