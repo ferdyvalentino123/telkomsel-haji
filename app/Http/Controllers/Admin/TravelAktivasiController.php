@@ -138,7 +138,10 @@ class TravelAktivasiController extends Controller
             $transaksi = Transaksi::findOrFail($id);
 
             // Simpan file bukti
-            $path = $request->file('bukti_injeksi')->store('bukti_injeksi/travel', 'public');
+            $file = $request->file('bukti_injeksi');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('storage/bukti_injeksi/travel'), $filename);
+            $path = 'bukti_injeksi/travel/' . $filename;
             $buktiUrl = asset('storage/' . $path);
 
             // Tentukan grup yang akan diupdate (semua MSISDN dalam 1 sesi checkout)

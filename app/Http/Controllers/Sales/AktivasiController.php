@@ -68,7 +68,10 @@ class AktivasiController extends Controller
         try {
             $transaksi = Transaksi::findOrFail($id);
 
-            $path = $request->file('bukti_injeksi')->store('bukti_injeksi', 'public');
+            $file = $request->file('bukti_injeksi');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('storage/bukti_injeksi'), $filename);
+            $path = 'bukti_injeksi/' . $filename;
 
             $transaksi->bukti_injeksi = $path;
             $transaksi->is_activated  = 1;

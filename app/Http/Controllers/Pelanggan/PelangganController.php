@@ -489,7 +489,7 @@ class PelangganController extends Controller
             return view('pelanggan.nota-preview', ['formData' => $formData]);
         }
 
-        $pdf = Pdf::loadView('supvis.kwitansi', ['formData' => $formData])
+        $pdf = Pdf::loadView('kasir.kwitansi', ['formData' => $formData])
             ->setPaper('A6', 'portrait');
 
         $filename = 'nota-' . $transaksi->id_transaksi . '.pdf';
