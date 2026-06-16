@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Dashboard Admin - Telkomsel Haji">
     <meta name="author" content="Telkomsel">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <title>@yield('title', 'Admin Dashboard') - Telkomsel Haji</title>
     <!-- Bootstrap CSS -->
