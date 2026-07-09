@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transaksis', function (Blueprint $table) {
+            $table->id();
             $table->softDeletes();
             $table->string('id_transaksi');
             $table->string('nama_pelanggan')->nullable();
