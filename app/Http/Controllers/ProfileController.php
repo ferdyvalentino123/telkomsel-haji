@@ -59,11 +59,9 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('photo')) {
-            // Delete old photo if exists
-            if ($user->photo) {
-                Storage::disk('public')->delete($user->photo);
-            }
-            $path = $request->file('photo')->store('profile_photos', 'public');
+            // Kita biarkan user->photo terhapus otomatis oleh Cloudinary jika ingin (tapi karena tidak simpan ID public Cloudinary, kita timpa saja)
+            // Di sini kita upload ke Cloudinary
+            $path = $request->file('photo')->storeOnCloudinary('profile_photos')->getSecurePath();
             $data['photo'] = $path;
         }
 

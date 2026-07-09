@@ -30,7 +30,7 @@ class DashboardController extends Controller
 
         $photoPath = null;
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('sales_photos', 'public');
+            $photoPath = $request->file('photo')->storeOnCloudinary('sales_photos')->getSecurePath();
         }
 
         RoleUsers::create([

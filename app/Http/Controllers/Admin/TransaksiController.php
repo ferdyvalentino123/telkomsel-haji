@@ -229,8 +229,7 @@ class TransaksiController extends Controller
 
             if ($request->hasFile('bukti_injeksi')) {
                 $file = $request->file('bukti_injeksi');
-                // Simpan di folder public/bukti_injeksi agar mudah diakses
-                $path = $file->store('bukti_injeksi', 'public');
+                $path = $file->storeOnCloudinary('bukti_injeksi')->getSecurePath();
                 
                 $transaksi->bukti_injeksi = $path;
                 $transaksi->is_activated = 1;

@@ -137,12 +137,10 @@ class TravelAktivasiController extends Controller
         try {
             $transaksi = Transaksi::findOrFail($id);
 
-            // Simpan file bukti
+            // Simpan file bukti ke Cloudinary
             $file = $request->file('bukti_injeksi');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('storage/bukti_injeksi/travel'), $filename);
-            $path = 'bukti_injeksi/travel/' . $filename;
-            $buktiUrl = asset('storage/' . $path);
+            $path = $file->storeOnCloudinary('bukti_injeksi/travel')->getSecurePath();
+            $buktiUrl = $path; // URL Cloudinary
 
             // Tentukan grup yang akan diupdate (semua MSISDN dalam 1 sesi checkout)
             $snapToken = $transaksi->snap_token;

@@ -425,12 +425,18 @@ class TransaksiController extends Controller
         $imagick->readImageBlob($pdfContent);
         $imagick->setImageFormat('png');
 
-        // Simpan gambar ke storage publik
-        $imagePath = "kwitansi/{$formData['id_transaksi']}.jpg";
-        Storage::disk('public')->put($imagePath, $imagick);
-
-        // Buat link publik ke gambar
-        $imageUrl = asset("storage/$imagePath");
+        // Simpan gambar sementara lalu upload ke Cloudinary
+        $tempFile = sys_get_temp_dir() . '/' . uniqid('kwitansi_') . '.jpg';
+        $imagick->writeImage($tempFile);
+        
+        $uploadResult = cloudinary()->upload($tempFile, [
+            'folder' => 'kwitansi',
+            'public_id' => $formData['id_transaksi']
+        ]);
+        $imageUrl = $uploadResult->getSecurePath();
+        
+        // Hapus file temporary
+        unlink($tempFile);
 
         // Kirim ke WhatsApp via redirect link
         $telepon = preg_replace('/[^0-9]/', '', $formData['telepon_pelanggan'] ?? '081234567890');
@@ -920,12 +926,18 @@ class TransaksiController extends Controller
         $imagick->readImageBlob($pdfContent);
         $imagick->setImageFormat('png');
 
-        // Simpan gambar ke storage publik
-        $imagePath = "kwitansi/{$formData['id_transaksi']}.jpg";
-        Storage::disk('public')->put($imagePath, $imagick);
-
-        // Buat link publik ke gambar
-        $imageUrl = asset("storage/$imagePath");
+        // Simpan gambar sementara lalu upload ke Cloudinary
+        $tempFile = sys_get_temp_dir() . '/' . uniqid('kwitansi_') . '.jpg';
+        $imagick->writeImage($tempFile);
+        
+        $uploadResult = cloudinary()->upload($tempFile, [
+            'folder' => 'kwitansi',
+            'public_id' => $formData['id_transaksi']
+        ]);
+        $imageUrl = $uploadResult->getSecurePath();
+        
+        // Hapus file temporary
+        unlink($tempFile);
 
         // Kirim ke WhatsApp via redirect link
         $telepon = preg_replace('/[^0-9]/', '', $formData['telepon_pelanggan'] ?? '081234567890');

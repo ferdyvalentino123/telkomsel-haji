@@ -69,16 +69,14 @@ class AktivasiController extends Controller
             $transaksi = Transaksi::findOrFail($id);
 
             $file = $request->file('bukti_injeksi');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('storage/bukti_injeksi'), $filename);
-            $path = 'bukti_injeksi/' . $filename;
+            $path = $file->storeOnCloudinary('bukti_injeksi')->getSecurePath();
 
             $transaksi->bukti_injeksi = $path;
             $transaksi->is_activated  = 1;
             $transaksi->save();
 
             // Generate WhatsApp link
-            $buktiUrl  = asset('storage/' . $path);
+            $buktiUrl  = $path; // URL langsung dari Cloudinary
             $telepon   = preg_replace('/[^0-9]/', '', $transaksi->telepon_pelanggan ?? '');
             if (str_starts_with($telepon, '0')) {
                 $telepon = '62' . substr($telepon, 1);
