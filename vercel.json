@@ -13,7 +13,7 @@
     ],
     "routes": [
         {
-            "src": "/(build|css|js|images|storage)/(.*)",
+            "src": "/(build|css|js|images|storage|admin_asset)/(.*)",
             "dest": "/public/$1/$2"
         },
         {
