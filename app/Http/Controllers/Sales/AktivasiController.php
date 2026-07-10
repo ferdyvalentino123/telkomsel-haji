@@ -69,7 +69,7 @@ class AktivasiController extends Controller
             $transaksi = Transaksi::findOrFail($id);
 
             $file = $request->file('bukti_injeksi');
-            $path = $file->storeOnCloudinary('bukti_injeksi')->getSecurePath();
+            $path = cloudinary()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi'])->getSecurePath();
 
             $transaksi->bukti_injeksi = $path;
             $transaksi->is_activated  = 1;

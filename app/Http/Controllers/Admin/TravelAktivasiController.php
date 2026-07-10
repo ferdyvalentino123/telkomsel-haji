@@ -139,7 +139,7 @@ class TravelAktivasiController extends Controller
 
             // Simpan file bukti ke Cloudinary
             $file = $request->file('bukti_injeksi');
-            $path = $file->storeOnCloudinary('bukti_injeksi/travel')->getSecurePath();
+            $path = cloudinary()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi/travel'])->getSecurePath();
             $buktiUrl = $path; // URL Cloudinary
 
             // Tentukan grup yang akan diupdate (semua MSISDN dalam 1 sesi checkout)
