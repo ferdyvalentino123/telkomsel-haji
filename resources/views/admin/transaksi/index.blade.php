@@ -268,11 +268,13 @@ function prosesAktivasi(url, nama, nomor) {
                     'Accept': 'application/json'
                 }
             })
-            .then(response => {
+            .then(async response => {
+                const data = await response.json().catch(() => null);
                 if (!response.ok) {
-                    throw new Error(response.statusText);
+                    const errorMsg = data && data.message ? data.message : response.statusText;
+                    throw new Error(errorMsg);
                 }
-                return response.json();
+                return data;
             })
             .catch(error => {
                 Swal.showValidationMessage(`Request failed: ${error}`);
