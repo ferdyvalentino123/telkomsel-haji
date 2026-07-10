@@ -220,9 +220,16 @@ class TransaksiController extends Controller
      */
     public function aktivasi(Request $request, $id)
     {
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'bukti_injeksi' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first('bukti_injeksi')
+            ], 422);
+        }
 
         try {
             $transaksi = Transaksi::findOrFail($id);
@@ -230,7 +237,10 @@ class TransaksiController extends Controller
             if ($request->hasFile('bukti_injeksi')) {
                 $file = $request->file('bukti_injeksi');
                 if (!$file || !$file->isValid()) {
-                    return back()->with('error', 'File bukti injeksi tidak valid atau tidak diterima server.');
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'File bukti injeksi tidak valid atau tidak diterima server.'
+                    ], 400);
                 }
                 $path = cloudinary()->uploadApi()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi'])['secure_url'];
                 

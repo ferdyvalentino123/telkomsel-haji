@@ -264,7 +264,8 @@ function prosesAktivasi(url, nama, nomor) {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 }
             })
             .then(response => {
