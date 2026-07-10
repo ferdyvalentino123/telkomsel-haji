@@ -225,13 +225,13 @@ class LoginController extends Controller
                 return redirect()->route('pelanggan.home')->with('success', 'Akun berhasil dibuat! Silakan lengkapi profil Anda.');
             }
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Google OAuth error', [
                 'error' => $e->getMessage(),
             ]);
 
             return redirect()->route('login')->withErrors([
-                'email' => 'Terjadi kesalahan saat login dengan Google. Silakan coba lagi.'
+                'email' => 'Terjadi kesalahan sistem: ' . $e->getMessage() . ' (Line: ' . $e->getLine() . ')'
             ]);
         }
     }
