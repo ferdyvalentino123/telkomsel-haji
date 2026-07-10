@@ -177,7 +177,7 @@
                         </div>
                     @endif
                     <div style="margin-top:1.25rem;">
-                        <button type="button" onclick="showBuktiInjeksi('{{ asset('storage/' . $firstActivated->bukti_injeksi) }}')"
+                        <button type="button" onclick="showBuktiInjeksi('{{ str_starts_with($firstActivated->bukti_injeksi, 'http') ? $firstActivated->bukti_injeksi : asset('storage/' . $firstActivated->bukti_injeksi) }}')"
                            style="display:inline-flex;align-items:center;gap:8px;background:#10b981;color:#fff;padding:0.65rem 1.25rem;border-radius:8px;font-weight:600;border:none;margin-right:0.5rem;transition:all 0.3s;cursor:pointer;">
                             <i class="fas fa-image"></i> Lihat Bukti Injeksi
                         </button>
@@ -222,7 +222,7 @@
                     <a href="{{ route('travel.transaksi.konfirmasi', $transaksi->id) }}" target="_blank" class="btn-action btn-secondary" style="background:#e8f5e9;color:#065f46;border:1px solid #a7f3d0;">
                         <i class="fas fa-file-alt me-2"></i>Surat Konfirmasi Injeksi
                     </a>
-                    <button type="button" onclick="showBuktiInjeksi('{{ asset('storage/' . $firstActivated->bukti_injeksi) }}')" class="btn-action btn-secondary" style="background:#e8f5e9;color:#065f46;border:1px solid #a7f3d0;">
+                    <button type="button" onclick="showBuktiInjeksi('{{ str_starts_with($firstActivated->bukti_injeksi, 'http') ? $firstActivated->bukti_injeksi : asset('storage/' . $firstActivated->bukti_injeksi) }}')" class="btn-action btn-secondary" style="background:#e8f5e9;color:#065f46;border:1px solid #a7f3d0;">
                         <i class="fas fa-image me-2"></i>Bukti Injeksi
                     </button>
                 @endif

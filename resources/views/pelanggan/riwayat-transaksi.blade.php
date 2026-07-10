@@ -515,7 +515,7 @@
                                 </button>
                                 
                                 @if($transaksi->is_activated && $transaksi->bukti_injeksi)
-                                <button type="button" class="btn-download-nota" style="background: #e3f2fd; color: #0d47a1;" onclick="viewBuktiInjeksi('{{ asset('storage/' . $transaksi->bukti_injeksi) }}')">
+                                <button type="button" class="btn-download-nota" style="background: #e3f2fd; color: #0d47a1;" onclick="viewBuktiInjeksi('{{ str_starts_with($transaksi->bukti_injeksi, 'http') ? $transaksi->bukti_injeksi : asset('storage/' . $transaksi->bukti_injeksi) }}')">
                                     <i class="fas fa-file-invoice"></i> Bukti Injeksi
                                 </button>
                                 @endif

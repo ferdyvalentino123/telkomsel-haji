@@ -244,7 +244,7 @@
                         {{-- Aksi --}}
                         <div class="d-flex gap-2 flex-wrap align-items-center">
                             @if($trx->is_activated && $trx->bukti_injeksi)
-                                <button type="button" onclick="showBuktiInjeksi('{{ asset('storage/' . $trx->bukti_injeksi) }}')" class="btn-view-bukti">
+                                <button type="button" onclick="showBuktiInjeksi('{{ str_starts_with($trx->bukti_injeksi, 'http') ? $trx->bukti_injeksi : asset('storage/' . $trx->bukti_injeksi) }}')" class="btn-view-bukti">
                                     <i class="fas fa-image"></i> Lihat Bukti
                                 </button>
                             @endif

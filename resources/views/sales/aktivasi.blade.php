@@ -192,7 +192,7 @@
                         {{-- Aksi --}}
                         <div class="d-flex gap-2 flex-wrap align-items-center">
                             @if($trx->is_activated && $trx->bukti_injeksi)
-                                <a href="{{ asset('storage/' . $trx->bukti_injeksi) }}" target="_blank" class="btn-view-bukti">
+                                <a href="{{ str_starts_with($trx->bukti_injeksi, 'http') ? $trx->bukti_injeksi : asset('storage/' . $trx->bukti_injeksi) }}" target="_blank" class="btn-view-bukti">
                                     <i class="fas fa-image"></i> Lihat Bukti
                                 </a>
                             @endif

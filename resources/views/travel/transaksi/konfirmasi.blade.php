@@ -394,7 +394,7 @@
                 <p style="font-size:0.82rem; color:#1d4ed8; margin-bottom:10px;">
                     Screenshot injeksi dari sistem Telkomsel telah disimpan. Klik tombol di bawah untuk membuka file bukti.
                 </p>
-                <a href="{{ asset('storage/' . $firstActivated->bukti_injeksi) }}" target="_blank" class="proof-link">
+                <a href="{{ str_starts_with($firstActivated->bukti_injeksi, 'http') ? $firstActivated->bukti_injeksi : asset('storage/' . $firstActivated->bukti_injeksi) }}" target="_blank" class="proof-link">
                     <i class="fas fa-external-link-alt"></i> Buka Bukti Injeksi
                 </a>
             </div>
