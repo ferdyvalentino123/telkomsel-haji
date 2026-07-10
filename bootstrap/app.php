@@ -37,4 +37,10 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return back()->with('error', 'Ukuran file terlalu besar! Maksimal 4MB.');
         });
+        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+            // Temporary debug: Print error directly to screen to avoid Vercel 500 pages hiding the error
+            if (env('APP_DEBUG') == true || env('VERCEL') == '1' || str_contains(url()->current(), 'vercel')) {
+                die("<h1 style='color:red'>FATAL ERROR DETECTED:</h1><h3>" . $e->getMessage() . "</h3><p>File: " . $e->getFile() . " on line " . $e->getLine() . "</p><textarea style='width:100%; height:300px'>" . $e->getTraceAsString() . "</textarea>");
+            }
+        });
     })->create();
