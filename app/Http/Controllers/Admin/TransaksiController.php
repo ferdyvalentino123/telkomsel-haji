@@ -229,10 +229,16 @@ class TransaksiController extends Controller
 
             if ($request->hasFile('bukti_injeksi')) {
                 $file = $request->file('bukti_injeksi');
+                if (!$file || !$file->isValid()) {
+                    return back()->with('error', 'File bukti injeksi tidak valid atau tidak diterima server.');
+                }
+                
                 $path = cloudinary()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi'])->getSecurePath();
                 
                 $transaksi->bukti_injeksi = $path;
                 $transaksi->is_activated = 1;
+                $transaksi->aktivasi_tanggal = now();
+                $transaksi->user_id_aktivasi = Auth::id(); // Mencatat admin/sales yang mengaktifkan
                 $transaksi->save();
 
                 return response()->json([
@@ -246,10 +252,10 @@ class TransaksiController extends Controller
                 'message' => 'File bukti injeksi tidak ditemukan.'
             ], 400);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage() . ' di baris ' . $e->getLine()
             ], 500);
         }
     }

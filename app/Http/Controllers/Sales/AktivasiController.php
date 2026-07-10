@@ -69,6 +69,13 @@ class AktivasiController extends Controller
             $transaksi = Transaksi::findOrFail($id);
 
             $file = $request->file('bukti_injeksi');
+            if (!$file || !$file->isValid()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File bukti injeksi tidak valid atau tidak diterima server.'
+                ], 400);
+            }
+            
             $path = cloudinary()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi'])->getSecurePath();
 
             $transaksi->bukti_injeksi = $path;
@@ -92,10 +99,10 @@ class AktivasiController extends Controller
                 'wa_link'   => $waLink,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal upload: ' . $e->getMessage(),
+                'message' => 'Gagal upload: ' . $e->getMessage() . ' di baris ' . $e->getLine(),
             ], 500);
         }
     }
