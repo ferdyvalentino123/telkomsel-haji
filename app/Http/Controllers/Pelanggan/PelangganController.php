@@ -466,8 +466,8 @@ class PelangganController extends Controller
         }
 
         $formData = [
-            'icon' => request()->ajax() ? asset('admin_asset/img/photos/icon_telkomsel.png') : public_path('admin_asset/img/photos/icon_telkomsel.png'),
-            'logo' => request()->ajax() ? asset('admin_asset/img/photos/logo_telkomsel.png') : public_path('admin_asset/img/photos/logo_telkomsel.png'),
+            'icon' => asset('admin_asset/img/photos/icon_telkomsel.png'),
+            'logo' => asset('admin_asset/img/photos/logo_telkomsel.png'),
             'id_transaksi' => $transaksi->id_transaksi,
             'produk_nama' => $produk->produk_nama,
             'produk_harga' => $produk->produk_harga,

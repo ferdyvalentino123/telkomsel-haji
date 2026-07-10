@@ -475,8 +475,8 @@ class TransaksiController extends Controller
 
         // Simpan ke session form_data
         $formData = [
-            'icon' => request()->ajax() ? asset('admin_asset/img/photos/icon_telkomsel.png') : public_path('admin_asset/img/photos/icon_telkomsel.png'),
-            'logo' => request()->ajax() ? asset('admin_asset/img/photos/logo_telkomsel.png') : public_path('admin_asset/img/photos/logo_telkomsel.png'),
+            'icon' => asset('admin_asset/img/photos/icon_telkomsel.png'),
+            'logo' => asset('admin_asset/img/photos/logo_telkomsel.png'),
             'id_transaksi' => $transaksi->id_transaksi,
             'produk_nama' => $selectedProduk ? $selectedProduk->produk_nama : $transaksi->jenis_paket,
             'produk_harga' => $selectedProduk ? $selectedProduk->produk_harga : 0,
