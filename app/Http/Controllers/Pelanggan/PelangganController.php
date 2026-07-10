@@ -465,9 +465,14 @@ class PelangganController extends Controller
             return back()->with('error', 'Produk tidak ditemukan.');
         }
 
+        $iconPath = base_path('public/admin_asset/img/photos/icon_telkomsel.png');
+        $logoPath = base_path('public/admin_asset/img/photos/logo_telkomsel.png');
+        $iconBase64 = file_exists($iconPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath)) : '';
+        $logoBase64 = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : '';
+
         $formData = [
-            'icon' => asset('admin_asset/img/photos/icon_telkomsel.png'),
-            'logo' => asset('admin_asset/img/photos/logo_telkomsel.png'),
+            'icon' => request()->ajax() ? asset('admin_asset/img/photos/icon_telkomsel.png') : $iconBase64,
+            'logo' => request()->ajax() ? asset('admin_asset/img/photos/logo_telkomsel.png') : $logoBase64,
             'id_transaksi' => $transaksi->id_transaksi,
             'produk_nama' => $produk->produk_nama,
             'produk_harga' => $produk->produk_harga,
@@ -488,6 +493,9 @@ class PelangganController extends Controller
         if (request()->ajax()) {
             return view('pelanggan.nota-preview', ['formData' => $formData]);
         }
+
+        ini_set('memory_limit', '512M');
+        ini_set('max_execution_time', '300');
 
         $pdf = Pdf::loadView('kasir.kwitansi', ['formData' => $formData])
             ->setPaper('A6', 'portrait');

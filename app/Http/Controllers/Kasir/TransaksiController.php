@@ -473,10 +473,15 @@ class TransaksiController extends Controller
             ->where('merch_nama', $transaksi->merchandise)
             ->first();
 
+        $iconPath = base_path('public/admin_asset/img/photos/icon_telkomsel.png');
+        $logoPath = base_path('public/admin_asset/img/photos/logo_telkomsel.png');
+        $iconBase64 = file_exists($iconPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath)) : '';
+        $logoBase64 = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : '';
+
         // Simpan ke session form_data
         $formData = [
-            'icon' => asset('admin_asset/img/photos/icon_telkomsel.png'),
-            'logo' => asset('admin_asset/img/photos/logo_telkomsel.png'),
+            'icon' => request()->ajax() ? asset('admin_asset/img/photos/icon_telkomsel.png') : $iconBase64,
+            'logo' => request()->ajax() ? asset('admin_asset/img/photos/logo_telkomsel.png') : $logoBase64,
             'id_transaksi' => $transaksi->id_transaksi,
             'produk_nama' => $selectedProduk ? $selectedProduk->produk_nama : $transaksi->jenis_paket,
             'produk_harga' => $selectedProduk ? $selectedProduk->produk_harga : 0,
@@ -507,6 +512,9 @@ class TransaksiController extends Controller
             $view .= '<script>window.onload = function() { setTimeout(function() { window.print(); }, 500); }</script>';
             return response($view);
         }
+
+        ini_set('memory_limit', '512M');
+        ini_set('max_execution_time', '300');
 
         $pdf = Pdf::loadView('kasir.kwitansi', ['formData' => $formData])->setPaper('A6', 'portrait'); // Set A6 paper size in portrait orientation;
 
