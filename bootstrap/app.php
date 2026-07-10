@@ -11,7 +11,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Alias middleware
         $middleware->alias([
             'role' => App\Http\Middleware\CheckRole::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
@@ -23,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'pelanggan' => App\Http\Middleware\PelangganMiddleware::class,
             'complete_profile' => App\Http\Middleware\EnsureProfileCompleted::class,
         ]);
+
+        // Hapus ValidatePostSize karena Vercel sudah membatasi di Edge network, 
+        // dan default post_max_size dari vercel-php sangat kecil sehingga menyebabkan PostTooLargeException
+        $middleware->remove(\Illuminate\Http\Middleware\ValidatePostSize::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, \Illuminate\Http\Request $request) {
