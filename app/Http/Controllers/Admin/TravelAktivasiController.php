@@ -139,6 +139,11 @@ class TravelAktivasiController extends Controller
 
             // Simpan file bukti ke Cloudinary
             $file = $request->file('bukti_injeksi');
+            
+            if (!$file || !$file->isValid()) {
+                return back()->with('error', 'File gagal diupload ke server. Pastikan ukuran file tidak melebihi 2MB.');
+            }
+
             $path = cloudinary()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi/travel'])->getSecurePath();
             $buktiUrl = $path; // URL Cloudinary
 
