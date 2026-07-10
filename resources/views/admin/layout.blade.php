@@ -364,7 +364,6 @@
         <nav id="sidebar" class="sidebar">
             <a class="sidebar-header-brand" href="{{ route('admin.home') }}">
                 <img src="{{ asset('admin_asset/img/photos/logo_telkomsel.png') }}"
-                    onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/b/bc/Telkomsel_2021_icon.svg'"
                     alt="Telkomsel" />
                 <div>
                     <span style="font-size: 1rem;">PONDOK HAJI</span><br>
