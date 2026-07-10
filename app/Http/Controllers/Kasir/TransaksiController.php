@@ -429,11 +429,11 @@ class TransaksiController extends Controller
         $tempFile = sys_get_temp_dir() . '/' . uniqid('kwitansi_') . '.jpg';
         $imagick->writeImage($tempFile);
         
-        $uploadResult = cloudinary()->upload($tempFile, [
+        $uploadResult = cloudinary()->uploadApi()->upload($tempFile, [
             'folder' => 'kwitansi',
             'public_id' => $formData['id_transaksi']
         ]);
-        $imageUrl = $uploadResult->getSecurePath();
+        $imageUrl = $uploadResult['secure_url'];
         
         // Hapus file temporary
         unlink($tempFile);
@@ -930,11 +930,11 @@ class TransaksiController extends Controller
         $tempFile = sys_get_temp_dir() . '/' . uniqid('kwitansi_') . '.jpg';
         $imagick->writeImage($tempFile);
         
-        $uploadResult = cloudinary()->upload($tempFile, [
+        $uploadResult = cloudinary()->uploadApi()->upload($tempFile, [
             'folder' => 'kwitansi',
-            'public_id' => $formData['id_transaksi']
+            'public_id' => $transaksi->id_transaksi ?? $transaksi['id_transaksi']
         ]);
-        $imageUrl = $uploadResult->getSecurePath();
+        $imageUrl = $uploadResult['secure_url'];
         
         // Hapus file temporary
         unlink($tempFile);

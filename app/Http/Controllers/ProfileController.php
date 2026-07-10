@@ -61,7 +61,7 @@ class ProfileController extends Controller
         if ($request->hasFile('photo')) {
             // Kita biarkan user->photo terhapus otomatis oleh Cloudinary jika ingin (tapi karena tidak simpan ID public Cloudinary, kita timpa saja)
             // Di sini kita upload ke Cloudinary
-            $path = cloudinary()->upload($request->file('photo')->getRealPath(), ['folder' => 'profile_photos'])->getSecurePath();
+            $path = cloudinary()->uploadApi()->upload($request->file('photo')->getRealPath(), ['folder' => 'profile_photos'])['secure_url'];
             $data['photo'] = $path;
         }
 

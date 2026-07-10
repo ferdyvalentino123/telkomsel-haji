@@ -144,7 +144,7 @@ class TravelAktivasiController extends Controller
                 return back()->with('error', 'File gagal diupload ke server. Pastikan ukuran file tidak melebihi 2MB.');
             }
 
-            $path = cloudinary()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi/travel'])->getSecurePath();
+            $path = cloudinary()->uploadApi()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi/travel'])['secure_url'];
             $buktiUrl = $path; // URL Cloudinary
 
             // Tentukan grup yang akan diupdate (semua MSISDN dalam 1 sesi checkout)

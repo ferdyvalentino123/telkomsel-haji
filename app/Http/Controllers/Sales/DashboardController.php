@@ -30,7 +30,7 @@ class DashboardController extends Controller
 
         $photoPath = null;
         if ($request->hasFile('photo')) {
-            $photoPath = cloudinary()->upload($request->file('photo')->getRealPath(), ['folder' => 'sales_photos'])->getSecurePath();
+            $photoPath = cloudinary()->uploadApi()->upload($request->file('photo')->getRealPath(), ['folder' => 'sales_photos'])['secure_url'];
         }
 
         RoleUsers::create([

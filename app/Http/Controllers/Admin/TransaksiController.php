@@ -232,8 +232,7 @@ class TransaksiController extends Controller
                 if (!$file || !$file->isValid()) {
                     return back()->with('error', 'File bukti injeksi tidak valid atau tidak diterima server.');
                 }
-                
-                $path = cloudinary()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi'])->getSecurePath();
+                $path = cloudinary()->uploadApi()->upload($file->getRealPath(), ['folder' => 'bukti_injeksi'])['secure_url'];
                 
                 $transaksi->bukti_injeksi = $path;
                 $transaksi->is_activated = 1;
