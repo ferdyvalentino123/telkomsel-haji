@@ -25,5 +25,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, \Illuminate\Http\Request $request) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal upload: Ukuran file terlalu besar! Maksimal 4MB.'
+                ], 413);
+            }
+            return back()->with('error', 'Ukuran file terlalu besar! Maksimal 4MB.');
+        });
     })->create();
