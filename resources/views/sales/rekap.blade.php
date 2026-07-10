@@ -434,22 +434,24 @@
                         return response.text();
                     })
                     .then(html => {
+                        const printUrl = `/programhaji/sales/transaksi/print/${transaksiId}?action=print-html`;
                         Swal.fire({
                             title: '<i class="fas fa-receipt text-danger"></i> Detail Nota',
-                            html: `<div style="text-align: left;">${html}</div>`,
+                            html: `
+                                <div style="text-align: left;">${html}</div>
+                                <div class="mt-4 d-flex justify-content-center gap-2">
+                                    <a href="${printUrl}" target="_blank" class="btn btn-danger px-4 py-2" style="border-radius: 8px; font-weight: 600;">
+                                        <i class="fas fa-print me-1"></i> Cetak Langsung
+                                    </a>
+                                </div>
+                            `,
                             showCancelButton: true,
-                            confirmButtonColor: '#bc0007',
+                            showConfirmButton: false,
                             cancelButtonColor: '#6c757d',
-                            confirmButtonText: '<i class="fas fa-print"></i> Cetak Langsung',
                             cancelButtonText: 'Tutup',
                             width: 'auto',
                             customClass: {
                                 popup: 'rounded-4'
-                            }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                const printUrl = `/programhaji/sales/transaksi/print/${transaksiId}?action=print-html`;
-                                window.open(printUrl, '_blank');
                             }
                         });
                     })
