@@ -494,19 +494,23 @@ class PelangganController extends Controller
             return view('pelanggan.nota-preview', ['formData' => $formData]);
         }
 
-        ini_set('memory_limit', '512M');
-        ini_set('max_execution_time', '300');
+        try {
+            ini_set('memory_limit', '512M');
+            ini_set('max_execution_time', '300');
 
-        $pdf = Pdf::loadView('kasir.kwitansi', ['formData' => $formData])
-            ->setPaper('A6', 'portrait');
+            $pdf = Pdf::loadView('kasir.kwitansi', ['formData' => $formData])
+                ->setPaper('A6', 'portrait');
 
-        $filename = 'nota-' . $transaksi->id_transaksi . '.pdf';
-        
-        if (request()->has('preview')) {
-            return $pdf->stream($filename);
+            $filename = 'nota-' . $transaksi->id_transaksi . '.pdf';
+            
+            if (request()->has('preview')) {
+                return $pdf->stream($filename);
+            }
+
+            return $pdf->download($filename);
+        } catch (\Throwable $e) {
+            die("<h1 style='color:red'>ERROR SAAT MENCETAK NOTA:</h1><h3>" . $e->getMessage() . "</h3><p>File: " . $e->getFile() . " on line " . $e->getLine() . "</p><textarea style='width:100%; height:300px'>" . $e->getTraceAsString() . "</textarea>");
         }
-
-        return $pdf->download($filename);
     }
 }
 
