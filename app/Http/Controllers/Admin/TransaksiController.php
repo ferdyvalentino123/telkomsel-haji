@@ -7,6 +7,7 @@ use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
 {
