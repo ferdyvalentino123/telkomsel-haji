@@ -1,7 +1,7 @@
 <div class="nota-paper">
     <!-- Header -->
     <div class="receipt-header">
-        @if(isset($formData['logo']))
+        @if(!empty($formData['logo']))
             <img src="{{ $formData['logo'] }}" alt="Telkomsel" class="receipt-logo">
         @endif
         <div class="receipt-title">STRUK PEMBELIAN</div>

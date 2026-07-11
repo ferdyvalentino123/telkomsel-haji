@@ -467,8 +467,11 @@ class PelangganController extends Controller
 
         $iconPath = base_path('public/admin_asset/img/photos/icon_telkomsel.png');
         $logoPath = base_path('public/admin_asset/img/photos/logo_telkomsel.png');
-        $iconBase64 = file_exists($iconPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath)) : '';
-        $logoBase64 = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : '';
+        // Vercel PHP runtimes often lack the GD extension required by DomPDF to parse PNGs.
+        // If we detect Vercel, we skip the PNG image to avoid 500 errors.
+        $isVercel = env('VERCEL') == '1' || str_contains(url()->current(), 'vercel');
+        $iconBase64 = (!$isVercel && file_exists($iconPath)) ? 'data:image/png;base64,' . base64_encode(file_get_contents($iconPath)) : null;
+        $logoBase64 = (!$isVercel && file_exists($logoPath)) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : null;
 
         $formData = [
             'icon' => request()->ajax() ? asset('admin_asset/img/photos/icon_telkomsel.png') : $iconBase64,
@@ -509,7 +512,7 @@ class PelangganController extends Controller
 
             return $pdf->download($filename);
         } catch (\Throwable $e) {
-            die("<h1 style='color:red'>ERROR SAAT MENCETAK NOTA:</h1><h3>" . $e->getMessage() . "</h3><p>File: " . $e->getFile() . " on line " . $e->getLine() . "</p><textarea style='width:100%; height:300px'>" . $e->getTraceAsString() . "</textarea>");
+            return back()->with('error', 'Gagal membuat nota PDF: ' . $e->getMessage());
         }
     }
 }
