@@ -248,7 +248,8 @@ class TransaksiController extends Controller
                 $transaksi->bukti_injeksi = $path;
                 $transaksi->is_activated = 1;
                 $transaksi->aktivasi_tanggal = now();
-                $transaksi->user_id_aktivasi = Auth::id(); // Mencatat admin/sales yang mengaktifkan
+                $transaksi->injeksi_oleh = Auth::user()->name; // Mencatat admin/sales yang mengaktifkan
+                $transaksi->injeksi_at = now();
                 $transaksi->save();
 
                 return response()->json([
